@@ -9,7 +9,7 @@ export default function AppHeader() {
         <div className="flex flex-col gap-2">
 
           <h1 className="text-2xl font-bold">
-            AWS Monitoring Dashboard
+            AWS PROD Monitoring Dashboard 
           </h1>
 
           <div className="flex gap-4">
