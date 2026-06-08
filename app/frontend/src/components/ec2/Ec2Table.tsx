@@ -1,5 +1,4 @@
 
-
 import { useNavigate } from "react-router-dom";
 
 interface Ec2Instance {

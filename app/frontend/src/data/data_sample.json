@@ -1,0 +1,34 @@
+{
+  "id": "i-048594",
+  "name": "srv-app-prod-01",
+  "account": "PROD-ERP",
+  "organization": "SOFOM",
+  "type": "t3.large",
+  "status": "Running",
+
+  "currentMetrics": {
+    "cpu": 35,
+    "memory": 61,
+    "disk": 45,
+    "network": 90
+  },
+
+  "historyMetrics": {
+    "cpu": [
+        { "time": "10:00", "value": 25 },
+        { "time": "11:00", "value": 30 }
+    ],
+    "memory": [
+        { "time": "10:00", "value": 60 },
+        { "time": "11:00", "value": 65 }
+    ],
+    "disk": [
+        { "time": "10:00", "value": 40 },
+        { "time": "11:00", "value": 42 }
+    ],
+    "network": [
+        { "time": "10:00", "value": 20 },
+        { "time": "11:00", "value": 35 }
+    ]
+  }
+}
