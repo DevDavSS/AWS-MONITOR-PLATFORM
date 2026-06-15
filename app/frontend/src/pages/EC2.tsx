@@ -1,22 +1,48 @@
 import ResourceCard from "@/components/dashboard/ResourceCard";
 import Ec2Table from "@/components/ec2/Ec2Table";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { instances } from "@/data/ec2";
+import { useEffect, useState } from "react";
+import { getEc2Instances } from "@/services/ec2Service";
+import type { EC2Instance } from "@/types/ec2";
 
 export default function EC2(){
+    const [instances, setInstances] = useState<EC2Instance[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+    async function loadInstances() {
+        try {
+        const data = await getEc2Instances();
+
+        setInstances(data);
+        } catch (error) {
+        console.error(error);
+        } finally {
+        setLoading(false);
+        }
+    }
+
+    loadInstances();
+    }, []);
+
     /*Uso de Datos de prueba */
-    const running = instances.filter(
+    const instancesWithMetrics = instances.map((instance) => ({
+    ...instance,
+    cpu: 0,
+    ram: 0,
+    }));
+
+    const running = instancesWithMetrics.filter(
     (instance) => instance.status === "Running"
     ).length;
 
-    const stopped = instances.filter(
+    const stopped = instancesWithMetrics.filter(
     (instance) => instance.status === "Stopped"
     ).length;
 
     /*Estado para almacenar lo escrito en la barra de busqueda de los servidores */
     const [search, setSearch] = useState("");
-    const filteredInstances = instances.filter((instance) =>
+    const filteredInstances = instancesWithMetrics.filter((instance) =>
     [
         instance.name,
         instance.id,
@@ -29,7 +55,10 @@ export default function EC2(){
         .includes(search.toLowerCase())
     );
 
-    const total = instances.length;
+    const total = instancesWithMetrics.length;
+    if (loading) {
+        return <div>Loading...</div>;
+    }
     return(
         <div className="space-y-6">
             <h1 className="text-3xl font-bold">
