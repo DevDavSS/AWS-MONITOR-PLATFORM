@@ -7,6 +7,7 @@ interface Ec2Instance {
   account: string;
   type: string;
   status: string;
+  cloudWatchAgent: boolean,
   cpu: number;
   ram: number;
 }
@@ -30,6 +31,7 @@ export default function Ec2Table({
             <th className="text-left p-3">Account</th>
             <th className="text-left p-3">Type</th>
             <th className="text-left p-3">Status</th>
+            <th className="text-left p-3">Agent CW</th>
             <th className="text-left p-3">CPU</th>
             <th className="text-left p-3">RAM</th>
           </tr>
@@ -47,6 +49,7 @@ export default function Ec2Table({
               <td className="p-3">{instance.account}</td>
               <td className="p-3">{instance.type}</td>
               <td className="p-3">{instance.status}</td>
+              <td className="p-3">{instance.cloudWatchAgent}</td>
               <td className="p-3">{instance.cpu}%</td>
               <td className="p-3">{instance.ram}%</td>
             </tr>

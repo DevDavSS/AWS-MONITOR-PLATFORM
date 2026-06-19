@@ -4,6 +4,7 @@ import {
 } from "@aws-sdk/client-ec2";
 
 import { ec2Client } from "../aws/ec2Client";
+import { getCpuMetrics, getMemoryMetrics } from "./CloudWatchService";
 
 function getTag(
   instance: any,
@@ -28,32 +29,52 @@ export const getEc2InstancesAws = async () => {
     reservation => reservation.Instances ?? []
   );
 
-  return instances.map(instance => ({
-    id: instance.InstanceId ?? "",
 
-    name: getTag(instance, "Name"),
+  return Promise.all(
+    instances.map(async (instance) => {
+      
 
-    account: "",
-    organization: "",
+      /*Get cpu mentrics from cloudwatch module */
+      const cpu = await getCpuMetrics(
+        instance.InstanceId!
+      );
+      /*Get Ram memory from cloudwatch module */
+      const memory = await getMemoryMetrics(
+        instance.InstanceId!
+      );
 
-    type: instance.InstanceType ?? "",
 
-    status: instance.State?.Name ?? "unknown",
 
-    currentMetrics: {
-      cpu: 0,
-      memory: 0,
-      disk: 0,
-      network: 0,
-    },
+      return {
+        id: instance.InstanceId ?? "",
 
-    historyMetrics: {
-      cpu: [],
-      memory: [],
-      disk: [],
-      network: [],
-    },
-  }));
+        name: getTag(instance, "Name"),
+
+        account: "",
+        organization: "",
+
+        type: instance.InstanceType ?? "",
+
+        status: instance.State?.Name ?? "unknown",
+
+        currentMetrics: {
+          cpu: cpu.current,
+          memory: memory.current,
+          disk: null,
+          network: 0,
+        },
+
+        historyMetrics: {
+          cpu: cpu.history,
+          memory: memory.history,
+          disk: [],
+          network: [],
+        },
+
+        hasCloudWatchAgent: memory.hasAgent,
+      };
+    })
+  );
 };
 
  {/* Servicio para fetchear instancias de EC2 al frontend, ruta local temporal*/} 

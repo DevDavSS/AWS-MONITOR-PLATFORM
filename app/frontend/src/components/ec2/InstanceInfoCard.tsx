@@ -6,6 +6,7 @@ interface InstanceInfoCardProps {
     organization: string;
     type: string;
     status: string;
+    cloudWatchAgent: boolean;
   };
 }
 
@@ -47,6 +48,10 @@ export default function InstanceInfoCard({
         <div>
           <span className="font-medium">Organization:</span>{" "}
           {instance.organization}
+        </div>
+        <div>
+          <span className="font-medium">CloudWatch Agent Enabled:</span>{" "}
+          {instance.cloudWatchAgent}
         </div>
       </div>
     </div>

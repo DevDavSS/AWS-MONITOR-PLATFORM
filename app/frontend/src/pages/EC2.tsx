@@ -25,11 +25,12 @@ export default function EC2(){
     loadInstances();
     }, []);
 
-    /*Uso de Datos de prueba */
+    /*Impresion de metricas en tabla general de instancias */
     const instancesWithMetrics = instances.map((instance) => ({
     ...instance,
-    cpu: 0,
-    ram: 0,
+    cpu: instance.currentMetrics?.cpu ?? 0,
+    ram: instance.currentMetrics?.memory ?? 0,
+
     }));
 
     const running = instancesWithMetrics.filter(
@@ -49,6 +50,7 @@ export default function EC2(){
         instance.account,
         instance.type,
         instance.status,
+       
     ]
         .join(" ")
         .toLowerCase()
