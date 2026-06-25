@@ -5,6 +5,7 @@ import {
 
 import { ec2Client } from "../aws/ec2Client";
 import { getCpuMetrics, getMemoryMetrics } from "./CloudWatchService";
+import { getDiskUsageMetric } from "./CloudWatchService";
 
 function getTag(
   instance: any,
@@ -43,7 +44,9 @@ export const getEc2InstancesAws = async () => {
         instance.InstanceId!
       );
 
-
+      const disk = await getDiskUsageMetric(
+        instance.InstanceId!
+      );
 
       return {
         id: instance.InstanceId ?? "",
@@ -60,14 +63,14 @@ export const getEc2InstancesAws = async () => {
         currentMetrics: {
           cpu: cpu.current,
           memory: memory.current,
-          disk: null,
+          disk: disk.current,
           network: 0,
         },
 
         historyMetrics: {
           cpu: cpu.history,
           memory: memory.history,
-          disk: [],
+          disk: disk.history,
           network: [],
         },
 

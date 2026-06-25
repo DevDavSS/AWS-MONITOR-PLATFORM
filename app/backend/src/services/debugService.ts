@@ -14,7 +14,7 @@ export const getCWAgentMetrics = async () => {
     await cloudWatchClient.send(
       new ListMetricsCommand({
         Namespace: "CWAgent",
-        MetricName: "mem_used_percent",
+        MetricName: "disk_used_percent",
       })
     );
 

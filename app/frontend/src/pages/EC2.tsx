@@ -30,6 +30,7 @@ export default function EC2(){
     ...instance,
     cpu: instance.currentMetrics?.cpu ?? 0,
     ram: instance.currentMetrics?.memory ?? 0,
+    disk: instance.currentMetrics.memory ?? 0
 
     }));
 

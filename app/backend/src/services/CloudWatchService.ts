@@ -110,9 +110,89 @@ export const getMemoryMetrics = async (
       },
     ],
   });
+  
 
   const response =
     await cloudWatchClient.send(command);
+
+  const result =
+    response.MetricDataResults?.[0];
+
+  const history =
+    result?.Timestamps?.map(
+      (time, index) => ({
+        time: time.toISOString(),
+        value: result.Values?.[index] ?? 0,
+      })
+    ) ?? [];
+
+  const current =
+    history[history.length - 1]?.value ?? 0;
+
+  return {
+    current,
+    history,
+    hasAgent: history.length > 0,
+  };
+};
+
+ {/*OPtaining disk space usage */}
+
+ export const getDiskUsageMetric = async (
+  instanceId: string
+) => {
+
+  const endTime = new Date();
+
+  const startTime = new Date(
+    endTime.getTime() - 6 * 60 * 60 * 1000
+  );
+
+  const command = new GetMetricDataCommand({
+    StartTime: startTime,
+    EndTime: endTime,
+
+    MetricDataQueries: [
+      {
+        Id: "disk",
+
+        MetricStat: {
+          Metric: {
+            Namespace: "CWAgent",
+            MetricName: "disk_used_percent",
+            Dimensions: [
+              {
+                Name: "InstanceId",
+                Value: instanceId,
+              },
+              {
+                Name: "path",
+                Value: "/dev/shm",
+              },
+              {
+                Name: "device",
+                Value: "tmpfs",
+              },
+              {
+                Name: "fstype",
+                Value: "tmpfs",
+              },
+            ]
+          },
+
+          Period: 300,
+          Stat: "Average",
+        },
+
+        ReturnData: true,
+      },
+    ],
+  });
+  
+
+  const response =
+    await cloudWatchClient.send(command);
+
 
   const result =
     response.MetricDataResults?.[0];
