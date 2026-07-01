@@ -1,4 +1,7 @@
+import { useHeader } from "./HeaderContext";
+
 export default function AppHeader() {
+  const { extraFilters } = useHeader();
   return (
     <header className="border-b px-6 py-4">
       <div className="flex items-start gap-4">
@@ -15,6 +18,8 @@ export default function AppHeader() {
           <div className="flex gap-4">
             <div>Organization Select</div>
             <div>Account Select</div>
+            <div>Region Select</div>
+            {extraFilters}
           </div>
 
         </div>

@@ -1,19 +1,9 @@
 
 import { useNavigate } from "react-router-dom";
-
-interface Ec2Instance {
-  id: string;
-  name: string;
-  account: string;
-  type: string;
-  status: string;
-  cloudWatchAgent: boolean,
-  cpu: number;
-  ram: number;
-}
+import type { EC2Instance } from "@/types/ec2";
 
 interface Ec2TableProps {
-  instances: Ec2Instance[];
+  instances: EC2Instance[];
 }
 
 export default function Ec2Table({
@@ -49,9 +39,10 @@ export default function Ec2Table({
               <td className="p-3">{instance.account}</td>
               <td className="p-3">{instance.type}</td>
               <td className="p-3">{instance.status}</td>
-              <td className="p-3">{instance.cloudWatchAgent}</td>
-              <td className="p-3">{instance.cpu}%</td>
-              <td className="p-3">{instance.ram}%</td>
+              <td className="p-3"> {instance.cloudWatchAgent ? "True" : "False"}</td>
+              <td className="p-3">{instance.currentMetrics.cpu.toFixed(1)}%</td>
+              <td className="p-3">{instance.currentMetrics.memory.toFixed(1)}%</td>
+              
             </tr>
           ))}
         </tbody>

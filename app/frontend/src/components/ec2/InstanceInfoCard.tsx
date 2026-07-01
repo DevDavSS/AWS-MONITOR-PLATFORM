@@ -1,13 +1,7 @@
+import type { EC2Instance } from "@/types/ec2";
+
 interface InstanceInfoCardProps {
-  instance: {
-    id: string;
-    name: string;
-    account: string;
-    organization: string;
-    type: string;
-    status: string;
-    cloudWatchAgent: boolean;
-  };
+  instance: EC2Instance;
 }
 
 export default function InstanceInfoCard({
@@ -51,7 +45,7 @@ export default function InstanceInfoCard({
         </div>
         <div>
           <span className="font-medium">CloudWatch Agent Enabled:</span>{" "}
-          {instance.cloudWatchAgent}
+           {instance.cloudWatchAgent ? "True" : "False"}
         </div>
       </div>
     </div>

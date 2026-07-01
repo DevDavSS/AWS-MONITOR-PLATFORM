@@ -1,3 +1,5 @@
+
+
 interface InstanceMetricsCardProps {
   cpu: number;
   ram: number;
@@ -23,7 +25,7 @@ export default function InstanceMetricsCard({
             CPU
           </p>
           <p className="text-2xl font-bold">
-            {cpu}%
+            {cpu.toFixed(2)}%
           </p>
         </div>
 
@@ -32,7 +34,7 @@ export default function InstanceMetricsCard({
             RAM
           </p>
           <p className="text-2xl font-bold">
-            {ram}%
+            {ram.toFixed(2)}%
           </p>
         </div>
 
@@ -41,7 +43,7 @@ export default function InstanceMetricsCard({
             Disk
           </p>
           <p className="text-2xl font-bold">
-            {disk}%
+            {disk.toFixed(2)}%
           </p>
         </div>
 
@@ -50,7 +52,7 @@ export default function InstanceMetricsCard({
             Network
           </p>
           <p className="text-2xl font-bold">
-            {network}
+            {network.toFixed(2)}MB/s
           </p>
         </div>
       </div>

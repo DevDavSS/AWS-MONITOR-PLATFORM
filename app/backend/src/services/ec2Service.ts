@@ -6,6 +6,7 @@ import {
 import { ec2Client } from "../aws/ec2Client";
 import { getCpuMetrics, getMemoryMetrics } from "./CloudWatchService";
 import { getDiskUsageMetric } from "./CloudWatchService";
+import { getNetworkTraffic } from "./CloudWatchService";
 
 function getTag(
   instance: any,
@@ -48,6 +49,11 @@ export const getEc2InstancesAws = async () => {
         instance.InstanceId!
       );
 
+      /* Get Network Traffic in MB from cloudwatch service module */
+      const network = await getNetworkTraffic(
+        instance.InstanceId!
+      );
+
       return {
         id: instance.InstanceId ?? "",
 
@@ -59,41 +65,42 @@ export const getEc2InstancesAws = async () => {
         type: instance.InstanceType ?? "",
 
         status: instance.State?.Name ?? "unknown",
-
+        cloudWatchAgent: memory.hasAgent,
+        
         currentMetrics: {
           cpu: cpu.current,
           memory: memory.current,
           disk: disk.current,
-          network: 0,
+          network: network.current,
         },
 
         historyMetrics: {
           cpu: cpu.history,
           memory: memory.history,
           disk: disk.history,
-          network: [],
+          network: network.history,
         },
 
-        hasCloudWatchAgent: memory.hasAgent,
+
       };
     })
   );
 };
 
- {/* Servicio para fetchear instancias de EC2 al frontend, ruta local temporal*/} 
-export async function getEc2Instances() {
-  const response = await fetch(
-    "http://localhost:3000/api/ec2"
-  );
+//  {/* Servicio para fetchear instancias de EC2 al frontend, ruta local temporal*/} 
+// export async function getEc2Instances() {
+//   const response = await fetch(
+//     "http://localhost:3000/api/ec2"
+//   );
 
-  if (!response.ok) {
-    throw new Error(
-      `Error fetching EC2 instances: ${response.statusText}`
-    );
-  }
+//   if (!response.ok) {
+//     throw new Error(
+//       `Error fetching EC2 instances: ${response.statusText}`
+//     );
+//   }
 
-  return response.json();
-}
+//   return response.json();
+// }
 
 {/* Servicio para resolver backend de instancias por id */}
 export const getEc2InstanceById = async (

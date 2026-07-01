@@ -7,19 +7,26 @@ import EC2 from "@/pages/EC2";
 import EKS from "@/pages/EKS";
 import RDS from "@/pages/RDS";
 import Ec2Detail from "@/pages/Ec2Detail";
+import RdsDetail from "@/pages/RDSDetail";
+
+import { HeaderProvider } from "./components/layout/HeaderContext";
+
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/ec2" element={<EC2 />} />
-          <Route path="/eks" element={<EKS />} />
-          <Route path="/rds" element={<RDS />} />
-          <Route path= "/ec2/:instanceId" element={<Ec2Detail />} />
-        </Route>
-      </Routes>
+      <HeaderProvider>
+        <Routes>
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/ec2" element={<EC2 />} />
+            <Route path="/eks" element={<EKS />} />
+            <Route path="/rds" element={<RDS />} />
+            <Route path="/ec2/:instanceId" element={<Ec2Detail />} />
+            <Route path="/rds/:DBinstanceId" element={<RdsDetail />} />
+          </Route>
+        </Routes>
+      </HeaderProvider>
     </BrowserRouter>
   );
 }

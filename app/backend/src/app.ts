@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import debugRoutes from "./routes/debugRoutes";
 import ec2Routes from "./routes/ec2Routes";
+import rdsRoutes from "./routes/rdsRoutes"
 
 const app = express();
 
@@ -17,6 +18,14 @@ app.get("/", (_, res) => {
   });
 });
 
+/* Rutas para RDS */
+app.use("/api/rds", rdsRoutes);
+
+app.get("/", (_, res) => {
+  res.json({
+    message: "Backend running",
+  });
+});
 
 const PORT = 3000;
 

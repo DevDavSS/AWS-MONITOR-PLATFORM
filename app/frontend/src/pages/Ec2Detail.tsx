@@ -3,7 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import InstanceInfoCard from "@/components/ec2/InstanceInfoCard";
 import InstanceMetricsCard from "@/components/ec2/InstanceMetricsCard";
-import MetricChart from "@/components/ec2/MetricChart";
+import MetricChart from "@/components/shared/MetricChart";
 import { getEc2InstanceById } from "@/services/ec2Service";
 import { useEffect, useState } from "react";
 import type { EC2Instance } from "@/types/ec2";
@@ -12,7 +12,6 @@ export default function Ec2Detail() {
   const navigate = useNavigate();
 
     const { instanceId } = useParams();
-    console.log(instanceId);
 
     const [instanceById, setInstance] = useState<EC2Instance | null>(null);
     const [loading, setLoading] = useState(true);
