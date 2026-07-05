@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import type { EC2Instance } from "@/types/ec2";
 
 export default function Ec2Detail() {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const { instanceId } = useParams();
 

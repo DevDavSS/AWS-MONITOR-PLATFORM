@@ -3,6 +3,7 @@ import cors from "cors";
 import debugRoutes from "./routes/debugRoutes";
 import ec2Routes from "./routes/ec2Routes";
 import rdsRoutes from "./routes/rdsRoutes"
+import eksRoutes from "./routes/eksRoutes"
 
 const app = express();
 
@@ -26,6 +27,17 @@ app.get("/", (_, res) => {
     message: "Backend running",
   });
 });
+
+
+/* Rutas para EKS */
+app.use("/api/eks", eksRoutes);
+
+app.get("/", (_, res) => {
+  res.json({
+    message: "Backend running",
+  });
+});
+
 
 const PORT = 3000;
 

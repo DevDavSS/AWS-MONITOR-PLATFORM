@@ -1,6 +1,5 @@
 import {
   DescribeInstancesCommand,
-  Instance$,
 } from "@aws-sdk/client-ec2";
 
 import { ec2Client } from "../aws/ec2Client";
