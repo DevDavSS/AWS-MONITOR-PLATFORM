@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getAuroraRDSAws, getAuroraRDSById } from "../services/rdsService";
+import { getAuroraRDSAws, getAuroraRDSById } from "../services/rds/rdsService";
 
 export const getDatabases = async (
   req: Request,

@@ -30,9 +30,27 @@ export async function getEksNodeGroupById(
   clusterId: string,
   nodeGroupId: string
 ) {
-  console.log(clusterId, nodeGroupId);
   const response = await fetch(
     `http://localhost:3000/api/eks/${clusterId}/nodegroups/${nodeGroupId}`
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `Error fetching Node Group: ${response.statusText}`
+    );
+  }
+
+  return response.json();
+}
+
+
+export async function getEksNodeById(
+  clusterId: string,
+  nodeGroupId: string,
+  nodeId: string,
+) {
+  const response = await fetch(
+    `http://localhost:3000/api/eks/${clusterId}/nodegroups/${nodeGroupId}/node/${nodeId}`
   );
 
   if (!response.ok) {

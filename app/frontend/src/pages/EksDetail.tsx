@@ -6,10 +6,12 @@ import { useState, useEffect } from "react";
 import type { EksCluster, NodeGroup } from "@/types/eks";
 import EksClusterInfoCard from "@/components/eks/EksClusterInfoCard";
 import Tabs from "@/components/shared/Tabs";
-import EksMetricsCard from "@/components/eks/EksMetricsCard";
 import MetricChart from "@/components/shared/MetricChart";
 import DataTable from "@/components/shared/DataTable";
 import { Input } from "@/components/ui/input";
+import MetricsCard from "@/components/shared/CurrentMetricCard";
+
+
 
 export default function EksDetail(){
     const navigate = useNavigate();
@@ -63,6 +65,31 @@ export default function EksDetail(){
 
         return text.includes(search.trim().toLowerCase());
     }) ?? [];
+    
+    /* Metricas para el componente de Metricas actuales (monitoring tab)  */
+    const metrics = [
+    {
+        label: "Avg CPU",
+        value: eksCluesterById?.avgCurrentMetrics.cpu ?? 0,
+        unit: "%",
+    },
+    {
+        label: "Avg Memory",
+        value: eksCluesterById?.avgCurrentMetrics.memory ?? 0,
+        unit: "%",
+    },
+    {
+        label: "Avg Disk",
+        value: eksCluesterById?.avgCurrentMetrics.disk ?? 0,
+        unit: "%",
+    },
+    {
+        label: "Avg Network",
+        value: eksCluesterById?.avgCurrentMetrics.network ?? 0,
+        unit: "MB/s",
+    },
+    ];
+
 
     /* Columnas para tabla de node groups */
     const nodeGroupColumns = [
@@ -131,11 +158,9 @@ export default function EksDetail(){
                 <>
                     {/* Sección de métricas actuales */}
                     {eksCluesterById && (
-                        <EksMetricsCard
-                            cpu={eksCluesterById.avgCurrentMetrics.cpu}
-                            memory={eksCluesterById.avgCurrentMetrics.memory}
-                            disk={eksCluesterById.avgCurrentMetrics.disk}
-                            network={eksCluesterById.avgCurrentMetrics.network}
+                        <MetricsCard
+                            title="Average Current Metrics (per Node Group)"
+                            metrics={metrics}
                         />
                     )}
                     {/* Seccion de gráficos historicos---------------------------------------------------------------------------- */}

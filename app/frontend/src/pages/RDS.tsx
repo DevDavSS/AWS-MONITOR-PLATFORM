@@ -28,6 +28,10 @@ export default function RDS(){
     loadInstances();
     }, []);
 
+    const tabs = [
+    { id: "monitoring", label: "Monitoring" },
+    { id: "warnings", label: "Warnings" },
+    ];
     const filteredDatabases = databases.filter((database) =>
     [
       database.id,
@@ -62,7 +66,7 @@ export default function RDS(){
             <h1 className="text-3xl font-bold">
             Aurora RDS Databases
             </h1>
-    
+
             <div className="grid grid-cols-3 gap-6">
             <ResourceCard title="Running" value={running} />
             <ResourceCard title="Stopped" value={stopped} />

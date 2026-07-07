@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getEc2InstancesAws, getEc2InstanceById } from "../services/ec2Service";
+import { getEc2InstancesAws, getEc2InstanceById } from "../services/ec2/ec2Service";
 
 export const getInstances = async (
   req: Request,

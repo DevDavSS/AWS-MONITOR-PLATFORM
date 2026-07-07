@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { getEksClusters, getEksClusterById, getEksNodeGroupById } from "../services/eksService";
+import { getEksClusters, getEksClusterById, getEksNodeGroupById,getEksNodeById} from "../services/eks/eksService";
 
 export const getClusters = async (
   req: Request,
@@ -46,4 +46,24 @@ export const getNodeGroupById = async (
   }
 
   res.json(nodeGroup);
+};
+
+
+export const getNodeById = async (
+  req: Request,
+  res: Response
+) => {
+  const clusterId = req.params.clusterId.toString();
+  const nodeGroupId = req.params.nodeGroupId.toString();
+  const nodeId = req.params.nodeId.toString();
+
+  const node = await getEksNodeById(clusterId,nodeGroupId, nodeId)
+
+  if (!node) {
+    return res.status(404).json({
+      message: "Node Group not found",
+    });
+  }
+
+  res.json(node);
 };

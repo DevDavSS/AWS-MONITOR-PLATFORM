@@ -13,7 +13,7 @@ export interface EC2Instance {
   type: string;
   status: string;
 
-  cloudWatchAgent: false,
+  cloudWatchAgent: boolean,
 
   currentMetrics: {
     cpu: number;

@@ -10,6 +10,8 @@ import Ec2Detail from "@/pages/Ec2Detail";
 import RdsDetail from "@/pages/RDSDetail";
 import EksDetail from "@/pages/EksDetail";
 import EksNodeGroup from "./pages/EksNodeGroup";
+import EKSNode from "./pages/EksNodeDetail";
+import Meraki from "./pages/Meraki";
 
 import { HeaderProvider } from "./components/layout/HeaderContext";
 
@@ -24,10 +26,12 @@ export default function App() {
             <Route path="/ec2" element={<EC2 />} />
             <Route path="/eks" element={<EKS />} />
             <Route path="/rds" element={<RDS />} />
+            <Route path="/physical-servers/meraki" element={<Meraki />} />
             <Route path="/ec2/:instanceId" element={<Ec2Detail />} />
             <Route path="/rds/:DBinstanceId" element={<RdsDetail />} />
             <Route path="/eks/:EksClusterId" element={<EksDetail />}/>
             <Route path="/eks/:EksClusterId/nodegroup/:EksNodeGroupId" element={<EksNodeGroup/>}/>
+            <Route path="/eks/:EksClusterId/nodegroup/:EksNodeGroupId/node/:instanceId" element={<EKSNode/>}/>
           </Route>
         </Routes>
       </HeaderProvider>

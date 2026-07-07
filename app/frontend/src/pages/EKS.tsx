@@ -43,10 +43,19 @@ export default function EKS(){
       .toLowerCase()
       .includes(search.toLowerCase())
     );
-    const clusters = 5;
-    const nodeGroups = 10;
-    const nodes = 50;
-    const healthyClusters = 4;
+
+    const clusters = EksClusters.length;
+    const nodeGroups = EksClusters.reduce(
+        (sum, cluster) => sum + cluster.nodeGroupCount,
+        0
+    );
+    const nodes = EksClusters.reduce(
+        (sum, cluster) => sum + cluster.nodeCount,
+        0
+    );
+    const healthyClusters = EksClusters.filter(
+        c => c.status === "ACTIVE"
+    ).length; //Definir desde backend próximamente
 
     if (loading) {
         return <div>Loading...</div>;

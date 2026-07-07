@@ -85,12 +85,12 @@ export default function(){
     {
         label: "Avg Memory",
         value: eksNodeGroupById?.avgCurrentMetrics.memory ?? 0,
-        unit: "GB",
+        unit: "%",
     },
     {
         label: "Avg Disk",
         value: eksNodeGroupById?.avgCurrentMetrics.disk ?? 0,
-        unit: "GB",
+        unit: "%",
     },
     {
         label: "Avg Network",
@@ -114,7 +114,7 @@ export default function(){
         {
             key: "cwAgent",
             header: "CW Agent",
-            render: (node: EC2Instance) => node.cloudWatchAgent ?? "-",
+            render: (node: EC2Instance) => node.cloudWatchAgent ? "true" : "false"
         },
         {
             key: "type",
@@ -231,9 +231,9 @@ export default function(){
                         data={filteredNodes}
                         columns={nodeColumns}
                         getRowKey={(node) => node.name}
-                        // onRowClick={(node) =>
-                        //     navigate(`/eks/${eksCluesterById?.id}/nodeGroup/${nodeGroup.name}`)
-                        // }
+                        onRowClick={(node) =>
+                            navigate(`/eks/${EksClusterId}/nodeGroup/${eksNodeGroupById.name}/node/${node.id}`)
+                        }
                     />    
                 </>
             )}

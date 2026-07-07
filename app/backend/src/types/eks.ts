@@ -1,3 +1,11 @@
+/*En la primera version se reuylizara la interfaz deEC2 instance para representar los nodos de EKS, 
+si se necesitan añadir mas atributos propios de eks con la api de kubernetes,
+se debera crear  una interfaz especifica */
+
+import type { EC2Instance } from "./ec2";
+
+
+
 /* Metric Point Interface para representar puntos de métrica */
 export interface MetricPoint {
   time: string;
@@ -6,62 +14,57 @@ export interface MetricPoint {
 
 /* Node Group Interface */
 export interface NodeGroup {
-  name:         string;
+  name:         string; //OK
 
-  status:       string;
+  status:       string; //OK
 
-  desiredSize:  number;
-  minSize:      number;
-  maxSize:      number;
+  desiredSize:  number; //OK
+  minSize:      number; //OK
+  maxSize:      number; //OK
+  totalNodes:   number; //OK
 
-  instanceType: string;
-}
-
-/* EKS Node Interface */
-export interface EksNode {
-  id:           string;
-  name:         string;
-
-  status:       string;
-
-  currentMetrics: {
-    cpu:        number;
-    memory:     number;
+  instanceType: string; //OK
+  
+  avgCurrentMetrics: {
+    cpu:        number;        /*AVG cpu percentage */
+    memory:     number;     /*AVG memory usage percentage per nodegroup*/
     disk:       number;
     network:    number;
   };
 
-  historyMetrics: {
-    cpu:        MetricPoint[];
-    memory:     MetricPoint[];
+  avgHistoryMetrics: {
+    cpu:        MetricPoint[];        /*AVG cpu percentage */
+    memory:     MetricPoint[];     /*AVG memory usage percentage */
     disk:       MetricPoint[];
     network:    MetricPoint[];
   };
+  nodes: EC2Instance[];
 }
+
 
 /* EKS Cluster Interface */
 export interface EksCluster {
-  id:           string;
+  id:           string; //OK
 
-  name:         string;
+  name:         string; //ok
 
-  account:      string;
-  organization: string;
-  region:       string;
+  account:      string; //wait
+  organization: string; //wait
+  region:       string; //wait
 
-  status:       string;
+  status:       string; //ok
 
-  version:      string;
+  version:      string; //ok
 
-  endpoint:     string;
+  endpoint:     string; //ok
 
-  totalDesired: number;
-  totalReady:   number;
-  nodeGroupCount: number;
-  nodeCount: number;
+  totalDesired: number; //ok
+  totalReady:   number; //ok
+  nodeGroupCount: number; //ok
+  nodeCount: number; //ok
 
   avgCurrentMetrics: {
-    cpu:        number;        /*AVG cpu percentage */
+    cpu:        number;        /*AVG cpu percentage */ 
     memory:     number;     /*AVG memory usage percentage */
     disk:       number;
     network:    number;
@@ -74,7 +77,6 @@ export interface EksCluster {
     network:    MetricPoint[];
   };
 
-  nodeGroups: NodeGroup[];
+  nodeGroups: NodeGroup[]; //ok
 
-  nodes: EksNode[];
 }

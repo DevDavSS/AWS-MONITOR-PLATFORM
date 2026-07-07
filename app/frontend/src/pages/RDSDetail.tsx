@@ -6,6 +6,7 @@ import type { RdsDatabase } from "@/types/rds";
 import { getRdsDatabasesById } from "@/services/rdsService";
 import  DBInstanceInfoCard  from "@/components/rds/DBInstanceInfoCard" 
 import DBInstanceMetricsCard from "@/components/rds/DBInstanceMetricsCard";
+import Tabs from "@/components/shared/Tabs";
 
 export default function RdsDetail() {
     const navigate = useNavigate();
@@ -32,6 +33,12 @@ export default function RdsDetail() {
       loadInstanceById();
     }, [DBinstanceId])
 
+    const tabs = [
+    { id: "monitoring", label: "Monitoring" },
+    { id: "warnings", label: "Warnings" },
+    ];
+    const [activeTab, setActiveTab] = useState("monitoring");
+    
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -54,6 +61,14 @@ export default function RdsDetail() {
         {DBinstanceById && (
             <DBInstanceInfoCard DBinstance={DBinstanceById}/>
         )}
+      {/* Selector de pestañas, y rednerizado segun pestaña seleccionada */}
+      <Tabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+      />
+    {activeTab === "monitoring" && (
+      <>
       {/* Seccion de métricas actuales---------------------------------------------------------------------------- */}
       {DBinstanceById && (
         <DBInstanceMetricsCard
@@ -140,8 +155,16 @@ export default function RdsDetail() {
           title="Select Throughput"
           data={DBinstanceById?.historyMetrics.selectThroughput.map(item => ({ time: item.time, value: item.value })) || []}
         /> 
-      </div>
-
+      </div> 
+      </>
+    )}
+    {activeTab === "warnings" && (
+        <div className="rounded-lg border p-8 text-center text-muted-foreground">
+            Coming Soon
         </div>
+    )}
+
+
+    </div>
     );
 }
