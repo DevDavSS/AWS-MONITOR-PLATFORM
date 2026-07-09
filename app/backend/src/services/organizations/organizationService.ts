@@ -1,50 +1,46 @@
-import { 
-    DescribeOrganizationCommand, 
-    ListAccountsCommand
-} from "@aws-sdk/client-organizations";
+import { ListAccountsCommand } from "@aws-sdk/client-organizations";
+import { assumeManagementRole } from "./roleService";
+import { createOrganizationsClient } from "../../aws/clientFactory";
+import { OrganizationAccount } from "../../types/organization";
 
-import { OrgClient } from "../../aws/organizationClient";
 
-export const getOrganizations = async () => {
+export const getAccounts = async (
+    organizationId: string
+): Promise<OrganizationAccount[]> => {
 
-    const organization = 
-        await OrgClient.send(
-            new DescribeOrganizationCommand({})
+    const credentials = 
+        await assumeManagementRole(
+            organizationId
         );
     
-    const accounts = 
-        await OrgClient.send(
+    const OrganizationsClient =
+        await createOrganizationsClient(
+            credentials
+        );
+    
+    const response =
+        await OrganizationsClient.send(
             new ListAccountsCommand({})
         );
 
-        {/* Estructurizacion de datos basado en el type en /types/organization.ts */}
-    return {
+    return (
+        response.Accounts ?? []
+    ).map(account => ({
+
         id:
-            organization.Organization?.Id ?? "",
-        arn:
-            organization.Organization?.Arn ?? "",
-
-        managementAccountId:
-            organization.Organization?.MasterAccountId ??
-        "",
-        featureSet:
-            organization.Organization?.FeatureSet ?? "",
-
-        accounts:
-        (accounts.Accounts ?? []).map(account => ({
-
-            id:
             account.Id ?? "",
 
-            name:
+        name:
             account.Name ?? "",
 
-            email:
+        email:
             account.Email ?? "",
 
-            status:
-            account.Status ?? "",
+        status:
+            account.State ??
+            
+            account.Status ??
+            "",
 
-        })),
-    }
-};
+    }));
+}
