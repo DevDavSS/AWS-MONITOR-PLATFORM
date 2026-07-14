@@ -4,16 +4,16 @@ import {
     Nodegroup$,
 } from "@aws-sdk/client-eks";
 import { getNodesFromNodeGroup } from "./nodeAsgService";
-import { eksClient } from "../../aws/eksClient";
 import { getAverageMetrics } from "./metricsService";
-
+import { EksContext } from "../../types/awsConstext";
 
 export const getNodeGroups = async (
+    eksContext: EksContext,
     clusterName: string
 ) => {
 
     const nodeGroupsResponse =
-        await eksClient.send(
+        await eksContext.eksClient.send(
 
             new ListNodegroupsCommand({
                 clusterName,
@@ -30,7 +30,7 @@ export const getNodeGroups = async (
         nodeGroupNames.map(async (nodeGroupName) => {
 
             const response =
-                await eksClient.send(
+                await eksContext.eksClient.send(
 
                     new DescribeNodegroupCommand({
                         clusterName,
@@ -42,7 +42,7 @@ export const getNodeGroups = async (
             const ng =
                 response.nodegroup!;
 
-            const nodes = await getNodesFromNodeGroup(clusterName,nodeGroupName )
+            const nodes = await getNodesFromNodeGroup(eksContext,clusterName,nodeGroupName )
             const metrics = getAverageMetrics(nodes)
 
             return {

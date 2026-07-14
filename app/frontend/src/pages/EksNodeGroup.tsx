@@ -11,22 +11,24 @@ import MetricChart from "@/components/shared/MetricChart";
 import ResourceCard from "@/components/dashboard/ResourceCard";
 import DataTable from "@/components/shared/DataTable";
 import { Input } from "@/components/ui/input";
-
+import { useFilters } from "@/contexts/FilterContext";
 
 export default function(){
     const navigate = useNavigate();
     const { EksClusterId, EksNodeGroupId } = useParams();
     const [search, setSearch] = useState("");
+    const { filters } = useFilters();
 
     /* Backend */
     const [eksNodeGroupById, setNodeGroup] = useState<NodeGroup | null>(null);
     const [loading, setLoading] = useState(true);
+    
 
     useEffect(() => {
         async function loadNodeGroupById() {
         try {
         if (EksNodeGroupId && EksClusterId) {
-            const data = await getEksNodeGroupById(EksClusterId,EksNodeGroupId);
+            const data = await getEksNodeGroupById(EksClusterId,EksNodeGroupId, filters);
             setNodeGroup(data);
         }
         } catch (error) {
@@ -37,7 +39,7 @@ export default function(){
         }
 
         loadNodeGroupById();
-    }, [EksClusterId, EksNodeGroupId])
+    }, [EksClusterId, EksNodeGroupId, filters])
 
     /* Node Greoups fields for info Card component */
     const nodeGroupFields = [

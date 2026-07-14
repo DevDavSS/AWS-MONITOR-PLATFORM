@@ -5,17 +5,19 @@ import { Input } from "@/components/ui/input";
 import type { RdsDatabase } from "@/types/rds";
 import { getRdsDatabases } from "@/services/rdsService";
 import { useEffect, useState } from "react";
+import { useFilters } from "@/contexts/FilterContext";
 
 export default function RDS(){
 
     const [databases, setDatabases] = useState<RdsDatabase[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
+    const {filters} = useFilters();
 
     useEffect(() => {
     async function loadInstances() {
         try {
-        const data = await getRdsDatabases();
+        const data = await getRdsDatabases(filters);
 
         setDatabases(data);
         } catch (error) {
@@ -26,12 +28,12 @@ export default function RDS(){
     }
 
     loadInstances();
-    }, []);
+    }, [filters]);
 
-    const tabs = [
-    { id: "monitoring", label: "Monitoring" },
-    { id: "warnings", label: "Warnings" },
-    ];
+    // const tabs = [
+    // { id: "monitoring", label: "Monitoring" },
+    // { id: "warnings", label: "Warnings" },
+    // ];
     const filteredDatabases = databases.filter((database) =>
     [
       database.id,

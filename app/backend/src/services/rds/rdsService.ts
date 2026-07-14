@@ -1,6 +1,7 @@
 import {
   DescribeDBClustersCommand,
   DescribeDBInstancesCommand,
+  RDSClient
 } from "@aws-sdk/client-rds";
 import { 
   getRdsCpuMetrics, 
@@ -18,13 +19,16 @@ import {
   getRdsSelectThroughputMetrics,
 
 } from "../cloudwatch/CloudWatchService";
-import { rdsClient } from "../../aws/rdsClient";
 
-export const getAuroraRDSAws = async () => {
+import { RdsContext } from "../../types/awsConstext";
+
+export const getAuroraRDSAws = async (
+  rdsConstext: RdsContext
+) => {
 
 const [clustersRes, instancesRes] = await Promise.all([
-  rdsClient.send(new DescribeDBClustersCommand({})),
-  rdsClient.send(new DescribeDBInstancesCommand({})),
+  rdsConstext.rdsClient.send(new DescribeDBClustersCommand({})),
+  rdsConstext.rdsClient.send(new DescribeDBInstancesCommand({})),
 ]);
 
 const clusters = clustersRes.DBClusters ?? [];
@@ -58,19 +62,19 @@ return Promise.all(
           commitThroughput,
           selectThroughput,
         ] = await Promise.all([
-          getRdsCpuMetrics(instanceId),
-          getRdsMemoryMetrics(instanceId),
-          getRdsConnectionsMetrics(instanceId),
-          getRdsNetworkInMetrics(instanceId),
-          getRdsNetworkOutMetrics(instanceId),
-          getRdsReadIopsMetrics(instanceId),
-          getRdsWriteIopsMetrics(instanceId),
-          getRdsReadThroughputMetrics(instanceId),
-          getRdsWriteThroughputMetrics(instanceId),
-          getRdsReadLatencyMetrics(instanceId),
-          getRdsWriteLatencyMetrics(instanceId),
-          getRdsCommitThroughputMetrics(instanceId),
-          getRdsSelectThroughputMetrics(instanceId),
+          getRdsCpuMetrics(instanceId, rdsConstext.cloudWatchClient),
+          getRdsMemoryMetrics(instanceId, rdsConstext.cloudWatchClient),
+          getRdsConnectionsMetrics(instanceId, rdsConstext.cloudWatchClient),
+          getRdsNetworkInMetrics(instanceId, rdsConstext.cloudWatchClient),
+          getRdsNetworkOutMetrics(instanceId, rdsConstext.cloudWatchClient),
+          getRdsReadIopsMetrics(instanceId, rdsConstext.cloudWatchClient),
+          getRdsWriteIopsMetrics(instanceId, rdsConstext.cloudWatchClient),
+          getRdsReadThroughputMetrics(instanceId, rdsConstext.cloudWatchClient),
+          getRdsWriteThroughputMetrics(instanceId, rdsConstext.cloudWatchClient),
+          getRdsReadLatencyMetrics(instanceId, rdsConstext.cloudWatchClient),
+          getRdsWriteLatencyMetrics(instanceId, rdsConstext.cloudWatchClient),
+          getRdsCommitThroughputMetrics(instanceId, rdsConstext.cloudWatchClient),
+          getRdsSelectThroughputMetrics(instanceId, rdsConstext.cloudWatchClient),
         ]);
 
         return {
@@ -80,9 +84,9 @@ return Promise.all(
 
           clusterIdentifier: clusterId,
 
-          account: "",
-          organization: "",
-          region: "",
+          account: rdsConstext.accountName,
+          organization: rdsConstext.organizationId,
+          region: rdsConstext.region,
 
           engine: cluster.Engine ?? "",
 
@@ -132,11 +136,14 @@ return Promise.all(
 };
 
 export const getAuroraRDSById = async (
-  id: string
+  id: string,
+  rdsContezt: RdsContext
 ) => {
 
   const databases =
-    await getAuroraRDSAws();
+    await getAuroraRDSAws(
+      rdsContezt
+    );
 
   return databases.find(
     database => database.id === id

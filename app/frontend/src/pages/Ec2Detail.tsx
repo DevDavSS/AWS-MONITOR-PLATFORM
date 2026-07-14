@@ -8,10 +8,11 @@ import type { EC2Instance } from "@/types/ec2";
 import Tabs from "@/components/shared/Tabs";
 import MetricsCard from "@/components/shared/CurrentMetricCard";
 import InfoCard from "@/components/shared/InfoCard";
+import { useFilters } from "@/contexts/FilterContext";
 
 export default function Ec2Detail() {
     const navigate = useNavigate();
-
+    const { filters } = useFilters();
     const { instanceId } = useParams();
 
     const [instanceById, setInstance] = useState<EC2Instance | null>(null);
@@ -21,7 +22,7 @@ export default function Ec2Detail() {
       async function loadInstanceById() {
         try {
         if (instanceId) {
-          const data = await getEc2InstanceById(instanceId);
+          const data = await getEc2InstanceById(instanceId, filters);
           setInstance(data);
         }
         } catch (error) {
@@ -69,7 +70,7 @@ export default function Ec2Detail() {
     /* Instance fields for info Card component */
     const instanceFields = [
         {
-            label: "Node Group name",
+            label: "Name",
             render: (instance: EC2Instance) => instance.name,
         },
         {
@@ -93,8 +94,8 @@ export default function Ec2Detail() {
             render: (instance: EC2Instance) => instance.organization,
         },
         {
-            label: "CloudWatch Agent Enabled:",
-            render: (instance: EC2Instance) => instance.cloudWatchAgent,
+            label: "CloudWatch Agent Enabled",
+            render: (instance: EC2Instance) => instance.cloudWatchAgent ? "true" : "false",
         },
     ]
 

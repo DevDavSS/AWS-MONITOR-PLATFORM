@@ -4,13 +4,15 @@ import {
 } from "@aws-sdk/client-eks";
 
 import { getNodeGroups } from "./nodeGroupsService";
-import { eksClient } from "../../aws/eksClient";
 import { getAverageMetrics } from "./metricsService";
+import { EksContext } from "../../types/awsConstext";
 
 
-export const getEksClusters = async () => {
+export const getEksClusters = async (
+    EksContext: EksContext,
+) => {
 
-    const response = await eksClient.send(
+    const response = await EksContext.eksClient.send(
         new ListClustersCommand({})
     );
 
@@ -20,7 +22,7 @@ export const getEksClusters = async () => {
 
         clusterNames.map(async (name) => {
 
-            const cluster = await eksClient.send(
+            const cluster = await EksContext.eksClient.send(
 
                 new DescribeClusterCommand({
                     name,
@@ -29,7 +31,7 @@ export const getEksClusters = async () => {
             );
 
             const nodeGroups =
-                await getNodeGroups(name);
+                await getNodeGroups(EksContext, name);
 
             const nodeCount =
                 nodeGroups.reduce(
@@ -46,6 +48,10 @@ export const getEksClusters = async () => {
                 id: name,
 
                 name,
+
+                account: EksContext.accountName,
+                organization: EksContext.organizationId,
+                region: EksContext.region,
 
                 status: cluster.cluster?.status,
 
@@ -81,11 +87,12 @@ export const getEksClusters = async () => {
 };
 
 export const getEksClusterById = async (
-    id: string
+    eksContext: EksContext,
+    id: string,
 ) => {
 
     const clusters =
-        await getEksClusters();
+        await getEksClusters(eksContext);
 
     return clusters.find(
         cluster => cluster.id === id
@@ -93,12 +100,13 @@ export const getEksClusterById = async (
 };
 
 export const getEksNodeGroupById = async (
+    eksContext: EksContext,
     clusterId: string,
     nodeGroupId: string
 ) => {
 
     const cluster =
-        await getEksClusterById(clusterId);
+        await getEksClusterById(eksContext,clusterId);
 
     if (!cluster) {
         return undefined;
@@ -111,15 +119,16 @@ export const getEksNodeGroupById = async (
 }
 
 export const getEksNodeById = async (
+    eksContext: EksContext,
     clusterId: string,
     nodeGroupId: string,
     nodeId: string,
 ) => {
 
     const cluster =
-        await getEksClusterById(clusterId);
+        await getEksClusterById(eksContext,clusterId);
     const nodeGroup = 
-        await getEksNodeGroupById(clusterId, nodeGroupId)
+        await getEksNodeGroupById(eksContext,clusterId, nodeGroupId)
         
     if (!cluster || !nodeGroup) {
         return undefined;

@@ -1,15 +1,16 @@
 import { DescribeNodegroupCommand } from "@aws-sdk/client-eks";
 import { DescribeAutoScalingGroupsCommand } from "@aws-sdk/client-auto-scaling";
-import { eksClient } from "../../aws/eksClient";
-import { AutoScalingClient } from "@aws-sdk/client-auto-scaling";
+import { EksContext } from "../../types/awsConstext";
 import { getEc2InstancesAws } from "../ec2/ec2Service";
 
+
 export const getNodesFromNodeGroup = async (
+    eksContext: EksContext,
     clusterName: string,
     nodeGroupName: string
 ) => {
     const nodeGroup =
-        await eksClient.send(
+        await eksContext.eksClient.send(
             new DescribeNodegroupCommand({
                     clusterName,
                     nodegroupName: nodeGroupName,
@@ -25,9 +26,9 @@ export const getNodesFromNodeGroup = async (
         throw new Error("Auto Scaling Group name not found");
     }
     /* Uso de cliente de autoscaling para obtener sus atributos*/
-    const autoScalingClient = new AutoScalingClient({});
+    //const autoScalingClient = new AutoScalingClient({});
     const response =
-        await autoScalingClient.send(
+        await eksContext.autoScalingClient.send(
             new DescribeAutoScalingGroupsCommand({
                 AutoScalingGroupNames: [
                     asgName
@@ -42,6 +43,7 @@ export const getNodesFromNodeGroup = async (
                 i => i.InstanceId!
             ) ?? [];
     return getEc2InstancesAws(
+        eksContext,
         instanceIds
     )
 }

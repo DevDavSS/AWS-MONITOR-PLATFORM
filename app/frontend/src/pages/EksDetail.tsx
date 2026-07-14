@@ -4,13 +4,13 @@ import { useNavigate, useParams } from "react-router-dom"
 import { getEksClustersById } from "@/services/eksService";
 import { useState, useEffect } from "react";
 import type { EksCluster, NodeGroup } from "@/types/eks";
-import EksClusterInfoCard from "@/components/eks/EksClusterInfoCard";
 import Tabs from "@/components/shared/Tabs";
 import MetricChart from "@/components/shared/MetricChart";
 import DataTable from "@/components/shared/DataTable";
 import { Input } from "@/components/ui/input";
 import MetricsCard from "@/components/shared/CurrentMetricCard";
-
+import InfoCard from "@/components/shared/InfoCard";
+import { useFilters } from "@/contexts/FilterContext";
 
 
 export default function EksDetail(){
@@ -22,11 +22,13 @@ export default function EksDetail(){
     const [eksCluesterById, setEksCluster] = useState<EksCluster | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const { filters } = useFilters();
+
     useEffect(() => {
         async function loadEksClusterById() {
         try {
         if (EksClusterId) {
-            const data = await getEksClustersById(EksClusterId);
+            const data = await getEksClustersById(EksClusterId,filters);
             setEksCluster(data);
         }
         } catch (error) {
@@ -37,7 +39,7 @@ export default function EksDetail(){
         }
 
         loadEksClusterById();
-    }, [EksClusterId])
+    }, [EksClusterId, filters])
     
     /* Componente de pestañas dinámico */
     const tabs = [
@@ -89,6 +91,42 @@ export default function EksDetail(){
         unit: "MB/s",
     },
     ];
+
+    /*  Cluster fields for info Card component */
+    const clusterFields = [
+        {
+            label: "Cluster Name",
+            render: (cluster: EksCluster) => cluster.name,
+        },
+        {
+            label: "Status",
+            render: (cluster: EksCluster) => cluster.status,
+        },
+        {
+            label: "Kubernetes Version",
+            render: (cluster: EksCluster) => cluster.version,
+        },
+        {
+            label: "Endpoint",
+            render: (cluster: EksCluster) => cluster.endpoint,
+        },
+        {
+            label: "Total Node Groups",
+            render: (cluster: EksCluster) => cluster.nodeGroupCount,
+        },
+        {
+            label: "Total Nodes",
+            render: (cluster: EksCluster) => cluster.nodeCount,
+        },
+        {
+            label: "Organization",
+            render: (cluster: EksCluster) => cluster.organization,
+        },
+        {
+            label: "Account",
+            render: (cluster: EksCluster) => cluster.account,
+        },
+    ]
 
 
     /* Columnas para tabla de node groups */
@@ -144,7 +182,11 @@ export default function EksDetail(){
             </h1>
 
             {eksCluesterById && (
-                <EksClusterInfoCard EksCluster={eksCluesterById}/>
+                <InfoCard
+                    title="Cluster Information"
+                    data={eksCluesterById}
+                    fields={clusterFields}
+                />
             )}
 
             {/* Selector de pestañas, y rednerizado segun pestaña seleccionada */}

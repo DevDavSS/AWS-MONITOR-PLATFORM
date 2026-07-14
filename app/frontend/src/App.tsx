@@ -14,27 +14,41 @@ import EKSNode from "./pages/EksNodeDetail";
 import Meraki from "./pages/Meraki";
 
 import { HeaderProvider } from "./components/layout/HeaderContext";
-
+import { FilterProvider } from "@/contexts/FilterContext";
 
 export default function App() {
   return (
     <BrowserRouter>
-      <HeaderProvider>
-        <Routes>
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/ec2" element={<EC2 />} />
-            <Route path="/eks" element={<EKS />} />
-            <Route path="/rds" element={<RDS />} />
-            <Route path="/physical-servers/meraki" element={<Meraki />} />
-            <Route path="/ec2/:instanceId" element={<Ec2Detail />} />
-            <Route path="/rds/:DBinstanceId" element={<RdsDetail />} />
-            <Route path="/eks/:EksClusterId" element={<EksDetail />}/>
-            <Route path="/eks/:EksClusterId/nodegroup/:EksNodeGroupId" element={<EksNodeGroup/>}/>
-            <Route path="/eks/:EksClusterId/nodegroup/:EksNodeGroupId/node/:instanceId" element={<EKSNode/>}/>
-          </Route>
-        </Routes>
-      </HeaderProvider>
+
+      <FilterProvider>
+
+        <HeaderProvider>
+
+          <Routes>
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/ec2" element={<EC2 />} />
+              <Route path="/eks" element={<EKS />} />
+              <Route path="/rds" element={<RDS />} />
+              <Route path="/physical-servers/meraki" element={<Meraki />} />
+              <Route path="/ec2/:instanceId" element={<Ec2Detail />} />
+              <Route path="/rds/:DBinstanceId" element={<RdsDetail />} />
+              <Route path="/eks/:EksClusterId" element={<EksDetail />} />
+              <Route
+                path="/eks/:EksClusterId/nodegroup/:EksNodeGroupId"
+                element={<EksNodeGroup />}
+              />
+              <Route
+                path="/eks/:EksClusterId/nodegroup/:EksNodeGroupId/node/:instanceId"
+                element={<EKSNode />}
+              />
+            </Route>
+          </Routes>
+
+        </HeaderProvider>
+
+      </FilterProvider>
+
     </BrowserRouter>
   );
 }

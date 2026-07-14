@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import debugRoutes from "./routes/debugRoutes";
+import organiazationRoute from "./routes/organizationsRoutes"
 import ec2Routes from "./routes/ec2Routes";
 import rdsRoutes from "./routes/rdsRoutes"
 import eksRoutes from "./routes/eksRoutes"
@@ -39,6 +39,17 @@ app.get("/", (_, res) => {
 });
 
 
+/* Rutas para consultar organizaciones */
+app.use("/api/organizations", organiazationRoute);
+
+app.get("/", (_, res) => {
+  res.json({
+    message: "Backend running",
+  });
+});
+
+
+
 const PORT = 3000;
 
 app.listen(PORT, () => {
@@ -46,4 +57,3 @@ app.listen(PORT, () => {
 });
 
 
-app.use("/api/debug", debugRoutes);

@@ -7,6 +7,7 @@ import { getRdsDatabasesById } from "@/services/rdsService";
 import  DBInstanceInfoCard  from "@/components/rds/DBInstanceInfoCard" 
 import DBInstanceMetricsCard from "@/components/rds/DBInstanceMetricsCard";
 import Tabs from "@/components/shared/Tabs";
+import { useFilters } from "@/contexts/FilterContext";
 
 export default function RdsDetail() {
     const navigate = useNavigate();
@@ -16,11 +17,13 @@ export default function RdsDetail() {
     const [ DBinstanceById, setDBInstance] = useState<RdsDatabase | null>(null);
     const [loading, setLoading] = useState(true);
 
+    const {filters} = useFilters();
+
     useEffect(() => {
       async function loadInstanceById() {
         try {
         if (DBinstanceId) {
-          const data = await getRdsDatabasesById(DBinstanceId);
+          const data = await getRdsDatabasesById(DBinstanceId, filters);
           setDBInstance(data);
         }
         } catch (error) {
@@ -31,7 +34,7 @@ export default function RdsDetail() {
       }
 
       loadInstanceById();
-    }, [DBinstanceId])
+    }, [DBinstanceId, filters])
 
     const tabs = [
     { id: "monitoring", label: "Monitoring" },

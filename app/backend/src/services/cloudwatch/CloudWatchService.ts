@@ -1,16 +1,17 @@
 import {
   GetMetricDataCommand,
-  ListMetricsCommand
+  ListMetricsCommand,
+  CloudWatchClient,
 } from "@aws-sdk/client-cloudwatch";
 
-import { cloudWatchClient } from "../aws/cloudWatchClient";
 
 
 {/*------------------------------------------------------------EC2 SERVICE FUNCTIONS----------------------------------------------- */}
 {/* Optaining the CPU usage metrics */}
 
 export const getCpuMetrics = async (
-    instanceId: string
+    instanceId: string,
+    cloudWatchClient: CloudWatchClient
 ) => {
     
     const endTime = new Date();
@@ -73,7 +74,8 @@ export const getCpuMetrics = async (
 
 {/* Optaining the RAM memory metrics */}
 export const getMemoryMetrics = async (
-  instanceId: string
+  instanceId: string,
+  cloudWatchClient: CloudWatchClient
 ) => {
 
   const endTime = new Date();
@@ -138,10 +140,11 @@ export const getMemoryMetrics = async (
   };
 };
 
- {/*OPtaining disk space usage -------------------------------------------------------------------*/}
+ {/*Geting disk space usage -------------------------------------------------------------------*/}
 
  export const getDiskUsageMetric = async (
-  instanceId: string
+  instanceId: string,
+  cloudWatchClient: CloudWatchClient
 ) => {
 
   const endTime = new Date();
@@ -207,7 +210,8 @@ export const getMemoryMetrics = async (
  {/*OPtaining Network traffic  -------------------------------------------------------------------*/}
 
  export const getNetworkTraffic = async (
-  instanceId: string
+  instanceId: string,
+  cloudWatchClient: CloudWatchClient
  ) => {
   
   const endTime = new Date();
@@ -276,7 +280,8 @@ export const getMemoryMetrics = async (
 {/*------------------------------------------------------------RDS SERVICE FUNCTIONS----------------------------------------------- */}
 
 export const getRdsCpuMetrics = async (
-  dbInstanceIdentifier: string
+  dbInstanceIdentifier: string,
+  cloudWatchClient: CloudWatchClient
 ) => {
 
   const endTime = new Date();
@@ -335,7 +340,8 @@ export const getRdsCpuMetrics = async (
 
 
 export const getRdsMemoryMetrics = async (
-  dbInstanceIdentifier: string
+  dbInstanceIdentifier: string,
+  cloudWatchClient: CloudWatchClient
 ) => {
 
   const endTime = new Date();
@@ -399,7 +405,8 @@ export const getRdsMemoryMetrics = async (
 
 
 export const getRdsConnectionsMetrics = async (
-  dbInstanceIdentifier: string
+  dbInstanceIdentifier: string,
+  cloudWatchClient: CloudWatchClient
 ) => {
 
   const endTime = new Date();
@@ -460,7 +467,8 @@ export const getRdsConnectionsMetrics = async (
 
 
 export const getRdsNetworkInMetrics = async (
-  dbInstanceIdentifier: string
+  dbInstanceIdentifier: string,
+  cloudWatchClient: CloudWatchClient
 ) => {
 
   const endTime = new Date();
@@ -524,7 +532,8 @@ export const getRdsNetworkInMetrics = async (
 };
 
 export const getRdsNetworkOutMetrics = async (
-  dbInstanceIdentifier: string
+  dbInstanceIdentifier: string,
+  cloudWatchClient: CloudWatchClient
 ) => {
 
   const endTime = new Date();
@@ -585,7 +594,8 @@ export const getRdsNetworkOutMetrics = async (
 
 
 export const getRdsReadIopsMetrics = async (
-  dbInstanceIdentifier: string
+  dbInstanceIdentifier: string,
+  cloudWatchClient: CloudWatchClient
 ) => {
 
   const endTime = new Date();
@@ -646,7 +656,8 @@ export const getRdsReadIopsMetrics = async (
 
 
 export const getRdsWriteIopsMetrics = async (
-  dbInstanceIdentifier: string
+  dbInstanceIdentifier: string,
+  cloudWatchClient: CloudWatchClient
 ) => {
 
   const endTime = new Date();
@@ -707,7 +718,8 @@ export const getRdsWriteIopsMetrics = async (
 
 
 export const getRdsReadThroughputMetrics = async (
-  dbInstanceIdentifier: string
+  dbInstanceIdentifier: string,
+  cloudWatchClient: CloudWatchClient
 ) => {
 
   const endTime = new Date();
@@ -770,7 +782,8 @@ export const getRdsReadThroughputMetrics = async (
 
 
 export const getRdsWriteThroughputMetrics = async (
-  dbInstanceIdentifier: string
+  dbInstanceIdentifier: string,
+  cloudWatchClient: CloudWatchClient
 ) => {
 
   const endTime = new Date();
@@ -833,7 +846,8 @@ export const getRdsWriteThroughputMetrics = async (
 
 
 export const getRdsReadLatencyMetrics = async (
-  dbInstanceIdentifier: string
+  dbInstanceIdentifier: string,
+  cloudWatchClient: CloudWatchClient
 ) => {
 
   const endTime = new Date();
@@ -898,7 +912,8 @@ export const getRdsReadLatencyMetrics = async (
 
 
 export const getRdsWriteLatencyMetrics = async (
-  dbInstanceIdentifier: string
+  dbInstanceIdentifier: string,
+  cloudWatchClient: CloudWatchClient
 ) => {
 
   const endTime = new Date();
@@ -964,7 +979,8 @@ export const getRdsWriteLatencyMetrics = async (
 
 
 export const getRdsCommitThroughputMetrics = async (
-  dbInstanceIdentifier: string
+  dbInstanceIdentifier: string,
+  cloudWatchClient: CloudWatchClient
 ) => {
 
   const endTime = new Date();
@@ -1024,7 +1040,8 @@ export const getRdsCommitThroughputMetrics = async (
 };
 
 export const getRdsSelectThroughputMetrics = async (
-  dbInstanceIdentifier: string
+  dbInstanceIdentifier: string,
+  cloudWatchClient: CloudWatchClient
 ) => {
 
   const endTime = new Date();

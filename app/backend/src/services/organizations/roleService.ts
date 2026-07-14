@@ -5,7 +5,7 @@ import {
 
 import { AwsCredentials } from "../../types/aws";
 import {organizations} from "../../config/organizations"
-import { error } from "node:console";
+
 
 
 const stsClient = new STSClient({});
@@ -13,7 +13,7 @@ const stsClient = new STSClient({});
 export const assumeManagementRole = async (
     organizationId: string
 ): Promise<AwsCredentials> => {
-
+    
     const organization = organizations.find(
         org => org.id === organizationId
     );
@@ -42,11 +42,20 @@ export const assumeManagementRole = async (
 };
 
 export const assumeMemberRole = async (
-    accountId : string
+    accountId : string,
+    managementCredentials: AwsCredentials
 ):Promise<AwsCredentials> => {
 
     const roleArn = 
         `arn:aws:iam::${accountId}:role/MonitoringAccountRole`;
+
+    const stsClient = new STSClient({
+        credentials: {
+            accessKeyId: managementCredentials.accessKeyId,
+            secretAccessKey: managementCredentials.secretAccessKey,
+            sessionToken: managementCredentials.sessionToken
+        }
+    })
 
     const response = await stsClient.send(
         new AssumeRoleCommand({

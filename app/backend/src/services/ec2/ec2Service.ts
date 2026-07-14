@@ -1,8 +1,7 @@
 import {
   DescribeInstancesCommand,
 } from "@aws-sdk/client-ec2";
-
-import { ec2Client } from "../../aws/ec2Client";
+import { awsBaseContext } from "../../types/awsConstext";
 import { getCpuMetrics, getMemoryMetrics,getDiskUsageMetric, getNetworkTraffic } from "../cloudwatch/CloudWatchService";
 
 function getTag(
@@ -18,10 +17,11 @@ function getTag(
 
 /* Funcion reutilizable por el servicio de EKS para obtencion de Nodos, por eso recibe como parametro una lista de ids como string */
 export const getEc2InstancesAws = async (
+    context:awsBaseContext,
     instanceIds?: string[]
 ) => {
 
-  const response = await ec2Client.send(
+  const response = await context.ec2Client.send(
     new DescribeInstancesCommand({
       InstanceIds: instanceIds?.length
         ? instanceIds
@@ -44,20 +44,24 @@ export const getEc2InstancesAws = async (
 
       /*Get cpu mentrics from cloudwatch module */
       const cpu = await getCpuMetrics(
-        instance.InstanceId!
+        instance.InstanceId!,
+        context.cloudWatchClient
       );
       /*Get Ram memory from cloudwatch module */
       const memory = await getMemoryMetrics(
-        instance.InstanceId!
+        instance.InstanceId!,
+        context.cloudWatchClient
       );
 
       const disk = await getDiskUsageMetric(
-        instance.InstanceId!
+        instance.InstanceId!,
+        context.cloudWatchClient
       );
 
       /* Get Network Traffic in MB from cloudwatch service module */
       const network = await getNetworkTraffic(
-        instance.InstanceId!
+        instance.InstanceId!,
+        context.cloudWatchClient
       );
 
       return {
@@ -65,8 +69,8 @@ export const getEc2InstancesAws = async (
 
         name: getTag(instance, "Name"),
 
-        account: "",
-        organization: "",
+        account: context.accountName,
+        organization: context.organizationId,
 
         type: instance.InstanceType ?? "",
 
@@ -93,26 +97,14 @@ export const getEc2InstancesAws = async (
   );
 };
 
-//  {/* Servicio para fetchear instancias de EC2 al frontend, ruta local temporal*/} 
-// export async function getEc2Instances() {
-//   const response = await fetch(
-//     "http://localhost:3000/api/ec2"
-//   );
-
-//   if (!response.ok) {
-//     throw new Error(
-//       `Error fetching EC2 instances: ${response.statusText}`
-//     );
-//   }
-
-//   return response.json();
-// }
-
-{/* Servicio para resolver backend de instancias por id */}
 export const getEc2InstanceById = async (
-  id: string
+  id: string,
+  context: awsBaseContext
 ) => {
-  const instances = await getEc2InstancesAws();
+  const instances = 
+    await getEc2InstancesAws(
+      context
+    );
 
   return instances.find(
     instance => instance.id === id

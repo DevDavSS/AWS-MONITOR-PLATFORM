@@ -4,16 +4,18 @@ import EksTable from "@/components/eks/EksTable";
 import type { EksCluster } from "@/types/eks";
 import { useEffect, useState } from "react";
 import { getEksClusters } from "@/services/eksService";
+import { useFilters } from "@/contexts/FilterContext";
 
 export default function EKS(){
     const [EksClusters, setEksClusters] = useState<EksCluster[]>([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
+    const { filters } = useFilters();
 
     useEffect(() => {
     async function loadInstances() {
         try {
-        const data = await getEksClusters();
+        const data = await getEksClusters(filters);
 
         setEksClusters(data);
         } catch (error) {
@@ -24,7 +26,7 @@ export default function EKS(){
     }
 
     loadInstances();
-    }, []);
+    }, [filters]);
 
     const filteredEksClusters = EksClusters.filter((cluster) =>
     [

@@ -44,3 +44,15 @@ export const getAccounts = async (
 
     }));
 }
+
+export const getAccountsById = async (
+    organizationId: string,
+    accountId: string
+) => {
+
+    const accounts = await getAccounts(organizationId);
+
+    return accounts.find(
+        account => account.id === accountId
+    );
+}

@@ -1,22 +1,47 @@
 import { Request, Response } from "express";
-import { getEc2InstancesAws, getEc2InstanceById } from "../services/ec2/ec2Service";
+
+import { 
+  getEc2InstancesFromOrganization,
+  getEc2InstanceFromOrganizationById
+} from "../services/ec2/ec2AgregatorService";
 
 export const getInstances = async (
   req: Request,
   res: Response
 ) => {
-  const instances = await getEc2InstancesAws();
+
+  const organizationId = req.query.organization as string;
+  const region = req.query.region as string;
+  const accountId = req.query.account as string | undefined;
+
+  const instances = await getEc2InstancesFromOrganization(
+      organizationId,
+      region,
+      accountId
+  );
 
   res.json(instances);
+
 };
 
 export const getInstanceById = async (
   req: Request,
   res: Response
 ) => {
-  const id = req.params.id.toString();
 
-  const instance = await getEc2InstanceById(id);
+  const id = req.params.id.toString();
+  const organizationId = req.query.organization as string;
+  const region = req.query.region as string;
+  const accountId = req.query.account as string | undefined;
+
+  const instance =
+    await getEc2InstanceFromOrganizationById(
+      organizationId,
+      region,
+      id,
+      accountId
+    )
 
   res.json(instance);
+
 };

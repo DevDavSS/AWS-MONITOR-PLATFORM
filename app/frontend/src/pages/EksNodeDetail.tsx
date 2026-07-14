@@ -8,6 +8,7 @@ import type { EC2Instance } from "@/types/ec2";
 import Tabs from "@/components/shared/Tabs";
 import InfoCard from "@/components/shared/InfoCard";
 import { getEksNodeById } from "@/services/eksService";
+import { useFilters } from "@/contexts/FilterContext";
 
 export default function EKSNode() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ export default function EKSNode() {
   const { instanceId} = useParams();
   const { EksClusterId} = useParams();
   const { EksNodeGroupId} = useParams();
-
+  const { filters } = useFilters();
   const [instanceById, setInstance] = useState<EC2Instance | null>(null);
 
   const [loading, setLoading] = useState(true);
@@ -25,7 +26,7 @@ export default function EKSNode() {
     async function loadInstanceById() {
       try {
       if (instanceId && EksClusterId && EksNodeGroupId) {
-        const data = await getEksNodeById(EksClusterId,EksNodeGroupId,instanceId);
+        const data = await getEksNodeById(EksClusterId,EksNodeGroupId,instanceId, filters);
         setInstance(data);
       }
       } catch (error) {
@@ -36,7 +37,7 @@ export default function EKSNode() {
     }
 
     loadInstanceById();
-  }, [EksClusterId,EksNodeGroupId,instanceId])
+  }, [EksClusterId,EksNodeGroupId,instanceId, filters])
 
 
     /* Metricas para el componente de Metricas actuales (monitoring tab)  */

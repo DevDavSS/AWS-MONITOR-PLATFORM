@@ -5,17 +5,20 @@ import { getEc2Instances } from "@/services/ec2Service";
 import type { EC2Instance } from "@/types/ec2";
 import DataTable from "@/components/shared/DataTable";
 import { useNavigate } from "react-router-dom";
+import { useFilters } from "@/contexts/FilterContext";
+
 
 export default function EC2() {
   const [instances, setInstances] = useState<EC2Instance[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
+  const { filters } = useFilters();
 
   useEffect(() => {
     async function loadInstances() {
       try {
-        const data = await getEc2Instances();
+        const data = await getEc2Instances(filters);
         setInstances(data);
       } catch (error) {
         console.error(error);
@@ -25,7 +28,7 @@ export default function EC2() {
     }
 
     loadInstances();
-  }, []);
+  }, [filters]);
 
     {/* instancia filtrados para DataTable y Barra de búsqueda */}
     const filteredinstances =
@@ -124,7 +127,7 @@ export default function EC2() {
       <DataTable
           data={filteredinstances}
           columns={instanceColumns}
-          getRowKey={(instance) => instance.name}
+          getRowKey={(instance) => instance.id}
           onRowClick={(instance) =>
               navigate(`/ec2/${instance.id}`)
           }
