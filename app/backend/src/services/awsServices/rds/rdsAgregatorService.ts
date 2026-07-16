@@ -1,35 +1,35 @@
 import { 
     createCloudWatchClient, 
-    createEc2Client, 
-} from "../../aws/clientFactory";
+    createRdsClient
+} from "../../../aws/clientFactory";
 
 import { getAccountCredentials } from "../organizations/accountService";
-import { getAccounts } from "../organizations/organizationService";
-import { getCache,setCache } from "../../cache/resourceCache";
+import { getAccounts, getAccountsById } from "../organizations/organizationService";
+import { getCache,setCache } from "../../../cache/resourceCache";
+import type { RdsDatabase } from "../../../types/services/rds";
 
 import { 
-    getEc2InstancesAws ,
-} from "./ec2Service";
+    getAuroraRDSAws, 
+} from "./rdsService";
 
-import { Ec2Context } from "../../types/awsConstext";
-import { EC2Instance } from "../../types/ec2";
+import { RdsContext } from "../../../types/services/awsConstext";
 
 
-export const getEc2InstancesFromOrganization = async (
+export const getAuroraRdsFromOrganization = async (
     organizationId: string,
     region: string,
     accountId?: string
 ) => {
 
     const cacheKey =
-        `ec2:${organizationId}:${region}`;
+        `rds:${organizationId}:${region}`;
 
     const cached =
-        getCache<EC2Instance[]>(cacheKey);
+        getCache<RdsDatabase[]>(cacheKey);
 
     if (cached) {
 
-        console.log("EC2 CACHE HIT");
+        console.log("RDS CACHE HIT");
 
         if (accountId && accountId !== "all") {
             return cached.filter(
@@ -43,24 +43,23 @@ export const getEc2InstancesFromOrganization = async (
 
     }
 
-    console.log("EC2 CACHE MISS");
+    console.log("RDS CACHE MISS");
 
     const accounts =
         await getAccounts(
             organizationId
         );
 
-    const instances = await Promise.all(
+    const auroraRdsInstances = await Promise.all(
 
         accounts.map(async account => {
-
-            const credentials =
+            const credentials = 
                 await getAccountCredentials(
                     organizationId,
                     account.id
                 );
 
-            const ec2Context: Ec2Context = {
+            const RdsContext: RdsContext = {
 
                 organizationId,
 
@@ -70,30 +69,18 @@ export const getEc2InstancesFromOrganization = async (
 
                 region,
 
-                ec2Client:
-                    createEc2Client(
-                        credentials,
-                        region
-                    ),
+                rdsClient: createRdsClient(credentials, region),
 
-                cloudWatchClient:
-                    createCloudWatchClient(
-                        credentials,
-                        region
-                    ),
+                cloudWatchClient: createCloudWatchClient(credentials, region)
 
             };
-
-            return await getEc2InstancesAws(
-                ec2Context
+            return await getAuroraRDSAws(
+                RdsContext
             );
-
         })
-
-    );
-
+    )
     const allInstances =
-        instances.flat();
+        auroraRdsInstances.flat();
 
     setCache(
         cacheKey,
@@ -104,24 +91,22 @@ export const getEc2InstancesFromOrganization = async (
 
         return allInstances.filter(
             instance =>
-                instance.accountId === accountId
+                instance.account === accountId
         );
 
     }
 
     return allInstances;
-
 };
 
-export const getEc2InstanceFromOrganizationById = async (
+export const getAuroraRdsFromOrganizationById = async (
     organizationId: string,
     region: string,
-    instanceId: string,
+    auroraRdsInstanceId: string,
     accountId?: string
 ) => {
-
     const instances =
-        await getEc2InstancesFromOrganization(
+        await getAuroraRdsFromOrganization(
             organizationId,
             region,
             accountId
@@ -129,7 +114,6 @@ export const getEc2InstanceFromOrganizationById = async (
 
     return instances.find(
         instance =>
-            instance.id === instanceId
+            instance.id === auroraRdsInstanceId
     );
-
 };

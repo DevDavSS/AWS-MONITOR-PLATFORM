@@ -1,4 +1,4 @@
-import { AwsCredentials } from "../types/aws";
+import { AwsCredentials } from "../types/services/aws";
 
 const credentialCache = new Map<
     string,

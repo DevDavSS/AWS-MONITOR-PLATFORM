@@ -4,7 +4,7 @@ import { EKS, EKSClient } from "@aws-sdk/client-eks";
 import { Organizations, OrganizationsClient } from "@aws-sdk/client-organizations";
 import { RDS, RDSClient } from "@aws-sdk/client-rds";
 import { AutoScalingClient } from "@aws-sdk/client-auto-scaling";
-import { AwsCredentials } from "../types/aws";
+import { AwsCredentials } from "../types/services/aws";
 
 const getClientConfig = (
     credentials: AwsCredentials,

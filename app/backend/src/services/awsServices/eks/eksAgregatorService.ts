@@ -3,17 +3,17 @@ import {
     createEksClient, 
     createEc2Client,
     createAutoScalingClient,
-} from "../../aws/clientFactory";
+} from "../../../aws/clientFactory";
 
 import { getAccountCredentials } from "../organizations/accountService";
 import { getAccounts } from "../organizations/organizationService";
-import { getCache, setCache } from "../../cache/resourceCache";
+import { getCache, setCache } from "../../../cache/resourceCache";
 import { 
     getEksClusters 
 } from "./eksService";
 
-import { EksContext } from "../../types/awsConstext";
-import { EksCluster } from "../../types/eks";
+import { EksContext } from "../../../types/services/awsConstext";
+import { EksCluster } from "../../../types/services/eks";
 
 export const getEksClustersFromOrganization = async (
     organizationId: string,

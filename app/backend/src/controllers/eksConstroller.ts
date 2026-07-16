@@ -4,7 +4,7 @@ import {
   getEksClusterByIdFromOrganization,
   getEksNodeByIdFromOrganization,
   getEksNodeGroupByIdFromOrganization
- } from "../services/eks/eksAgregatorService";
+ } from "../services/awsServices/eks/eksAgregatorService";
 
 
 export const getClusters = async (

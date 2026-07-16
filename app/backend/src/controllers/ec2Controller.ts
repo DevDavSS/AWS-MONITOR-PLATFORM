@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import { 
   getEc2InstancesFromOrganization,
   getEc2InstanceFromOrganizationById
-} from "../services/ec2/ec2AgregatorService";
+} from "../services/awsServices/ec2/ec2AgregatorService";
 
 export const getInstances = async (
   req: Request,

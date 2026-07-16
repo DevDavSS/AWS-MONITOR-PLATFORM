@@ -1,7 +1,7 @@
 import {
   DescribeInstancesCommand,
 } from "@aws-sdk/client-ec2";
-import { awsBaseContext } from "../../types/awsConstext";
+import { awsBaseContext } from "../../../types/services/awsConstext";
 import { getCpuMetrics, getMemoryMetrics,getDiskUsageMetric, getNetworkTraffic } from "../cloudwatch/CloudWatchService";
 
 function getTag(

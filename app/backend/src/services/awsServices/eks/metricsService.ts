@@ -1,4 +1,4 @@
-import type { EC2Instance, MetricPoint } from "../../types/ec2";
+import type { EC2Instance, MetricPoint } from "../../../types/services/ec2";
 
 const averageCurrentMetrics = (
   instances: EC2Instance[]

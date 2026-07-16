@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { 
   getAuroraRdsFromOrganization, 
   getAuroraRdsFromOrganizationById 
-} from "../services/rds/rdsAgregatorService";
+} from "../services/awsServices/rds/rdsAgregatorService";
 
 
 export const getAuroraRdsInstances = async (

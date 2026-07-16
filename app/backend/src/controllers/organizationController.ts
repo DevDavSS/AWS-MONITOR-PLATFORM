@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import {organizationsNoArn} from "../config/organizations"
-import { getAccounts } from "../services/organizations/organizationService";
+import { getAccounts } from "../services/awsServices/organizations/organizationService";
 
 export const getOrganizations = async(
     req: Request,
