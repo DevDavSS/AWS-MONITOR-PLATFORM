@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
 import { 
   getEksClustersFromOrganization,
-  getEksClustersByIdFromOrganization,
+  getEksClusterByIdFromOrganization,
   getEksNodeByIdFromOrganization,
   getEksNodeGroupByIdFromOrganization
  } from "../services/eks/eksAgregatorService";
-import { getEksNodeById } from "../services/eks/eksService";
+
 
 export const getClusters = async (
   req: Request,
@@ -34,7 +34,7 @@ export const getClusterById = async (
   const region = req.query.region as string;
   const accountId = req.query.account as string | undefined;
 
-  const eksCluster = await getEksClustersByIdFromOrganization(
+  const eksCluster = await getEksClusterByIdFromOrganization(
       organizationId,
       region,
       clusterId,

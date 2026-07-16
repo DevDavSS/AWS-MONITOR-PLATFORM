@@ -4,14 +4,16 @@ import {
 } from "../../aws/clientFactory";
 
 import { getAccountCredentials } from "../organizations/accountService";
-import { getAccounts, getAccountsById } from "../organizations/organizationService";
+import { getAccounts } from "../organizations/organizationService";
+import { getCache,setCache } from "../../cache/resourceCache";
 
 import { 
     getEc2InstancesAws ,
-    getEc2InstanceById
 } from "./ec2Service";
 
 import { Ec2Context } from "../../types/awsConstext";
+import { EC2Instance } from "../../types/ec2";
+
 
 export const getEc2InstancesFromOrganization = async (
     organizationId: string,
@@ -19,26 +21,39 @@ export const getEc2InstancesFromOrganization = async (
     accountId?: string
 ) => {
 
-    let accounts;
+    const cacheKey =
+        `ec2:${organizationId}:${region}`;
 
-    if (accountId && accountId !== "all") {
-        const account = await getAccountsById(
-            organizationId,
-            accountId
-        );
+    const cached =
+        getCache<EC2Instance[]>(cacheKey);
 
-        if (!account) {
-            return [];
+    if (cached) {
+
+        console.log("EC2 CACHE HIT");
+
+        if (accountId && accountId !== "all") {
+            return cached.filter(
+                instance =>
+                    instance.accountId === accountId
+            );
+
         }
 
-        accounts = [account];
-    } else {
-        accounts = await getAccounts(organizationId);
+        return cached;
+
     }
+
+    console.log("EC2 CACHE MISS");
+
+    const accounts =
+        await getAccounts(
+            organizationId
+        );
 
     const instances = await Promise.all(
 
         accounts.map(async account => {
+
             const credentials =
                 await getAccountCredentials(
                     organizationId,
@@ -55,19 +70,47 @@ export const getEc2InstancesFromOrganization = async (
 
                 region,
 
-                ec2Client: createEc2Client(credentials, region),
+                ec2Client:
+                    createEc2Client(
+                        credentials,
+                        region
+                    ),
 
-                cloudWatchClient: createCloudWatchClient(credentials, region),
+                cloudWatchClient:
+                    createCloudWatchClient(
+                        credentials,
+                        region
+                    ),
 
             };
 
             return await getEc2InstancesAws(
                 ec2Context
             );
+
         })
 
     );
-    return instances.flat();
+
+    const allInstances =
+        instances.flat();
+
+    setCache(
+        cacheKey,
+        allInstances
+    );
+
+    if (accountId && accountId !== "all") {
+
+        return allInstances.filter(
+            instance =>
+                instance.accountId === accountId
+        );
+
+    }
+
+    return allInstances;
+
 };
 
 export const getEc2InstanceFromOrganizationById = async (
@@ -76,63 +119,17 @@ export const getEc2InstanceFromOrganizationById = async (
     instanceId: string,
     accountId?: string
 ) => {
-    let accounts;
 
-    if (accountId && accountId !== "all") {
-        const account = await getAccountsById(
+    const instances =
+        await getEc2InstancesFromOrganization(
             organizationId,
+            region,
             accountId
         );
 
-        if (!account) {
-            return [];
-        }
-
-        accounts = [account];
-    } else {
-        accounts = await getAccounts(organizationId);
-    }
-
-    for (const account of accounts) {
-
-        const credentials =
-            await getAccountCredentials(organizationId,account.id );
-
-        const ec2Context: Ec2Context = {
-
-            organizationId,
-
-            accountId: account.id,
-            accountName: account.name,
-
-            region,
-
-            ec2Client:
-                createEc2Client(
-                    credentials,
-                    region
-                ),
-
-            cloudWatchClient:
-                createCloudWatchClient(
-                    credentials,
-                    region
-                ),
-
-        };
-
-        const instance =
-            await getEc2InstanceById(
-                instanceId,
-                ec2Context
-            );
-
-        if (instance) {
-            return instance;
-        }
-
-    }
-
-    return undefined;
+    return instances.find(
+        instance =>
+            instance.id === instanceId
+    );
 
 };

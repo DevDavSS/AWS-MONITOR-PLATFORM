@@ -9,15 +9,25 @@ import Tabs from "@/components/shared/Tabs";
 import MetricsCard from "@/components/shared/CurrentMetricCard";
 import InfoCard from "@/components/shared/InfoCard";
 import { useFilters } from "@/contexts/FilterContext";
+import { useHeader } from "@/components/layout/HeaderContext";
 
 export default function Ec2Detail() {
     const navigate = useNavigate();
     const { filters } = useFilters();
     const { instanceId } = useParams();
 
+    const { setFiltersEnabled } = useHeader();
     const [instanceById, setInstance] = useState<EC2Instance | null>(null);
     const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+      setFiltersEnabled(false);
+
+      return () => {
+        setFiltersEnabled(true);
+      };
+    }, []);
+    
     useEffect(() => {
       async function loadInstanceById() {
         try {

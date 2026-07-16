@@ -8,6 +8,7 @@ import  DBInstanceInfoCard  from "@/components/rds/DBInstanceInfoCard"
 import DBInstanceMetricsCard from "@/components/rds/DBInstanceMetricsCard";
 import Tabs from "@/components/shared/Tabs";
 import { useFilters } from "@/contexts/FilterContext";
+import { useHeader } from "@/components/layout/HeaderContext";
 
 export default function RdsDetail() {
     const navigate = useNavigate();
@@ -16,8 +17,17 @@ export default function RdsDetail() {
 
     const [ DBinstanceById, setDBInstance] = useState<RdsDatabase | null>(null);
     const [loading, setLoading] = useState(true);
-
+    const { setFiltersEnabled } = useHeader();
     const {filters} = useFilters();
+    
+    /* Desabilitar filtros de encabezado */
+    useEffect(() => {
+      setFiltersEnabled(false);
+
+      return () => {
+        setFiltersEnabled(true);
+      };
+    }, []);
 
     useEffect(() => {
       async function loadInstanceById() {

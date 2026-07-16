@@ -70,6 +70,7 @@ export const getEc2InstancesAws = async (
         name: getTag(instance, "Name"),
 
         account: context.accountName,
+        accountId: context.accountId,
         organization: context.organizationId,
 
         type: instance.InstanceType ?? "",
@@ -97,17 +98,18 @@ export const getEc2InstancesAws = async (
   );
 };
 
-export const getEc2InstanceById = async (
-  id: string,
-  context: awsBaseContext
-) => {
-  const instances = 
-    await getEc2InstancesAws(
-      context
-    );
 
-  return instances.find(
-    instance => instance.id === id
-  );
+// export const getEc2InstanceById = async (
+//   id: string,
+//   context: awsBaseContext
+// ) => {
+//   const instances = 
+//     await getEc2InstancesAws(
+//       context
+//     );
 
-}
+//   return instances.find(
+//     instance => instance.id === id
+//   );
+
+// }

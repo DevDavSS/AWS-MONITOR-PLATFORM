@@ -6,38 +6,49 @@ import {
 } from "../../aws/clientFactory";
 
 import { getAccountCredentials } from "../organizations/accountService";
-import { getAccounts, getAccountsById } from "../organizations/organizationService";
-
+import { getAccounts } from "../organizations/organizationService";
+import { getCache, setCache } from "../../cache/resourceCache";
 import { 
-    getEksNodeById,
-    getEksNodeGroupById,
-    getEksClusterById, 
     getEksClusters 
 } from "./eksService";
 
 import { EksContext } from "../../types/awsConstext";
+import { EksCluster } from "../../types/eks";
 
 export const getEksClustersFromOrganization = async (
     organizationId: string,
     region: string,
     accountId?: string
 ) => {
-    let accounts;
 
-    if (accountId && accountId !== "all") {
-        const account = await getAccountsById(
-            organizationId,
-            accountId
-        );
+    const cacheKey =
+        `eks:${organizationId}:${region}`;
 
-        if (!account) {
-            return [];
+    const cached =
+        getCache<EksCluster[]>(cacheKey);
+
+    if (cached) {
+
+        console.log("EKS CACHE HIT");
+
+        if (accountId && accountId !== "all") {
+            return cached.filter(
+                cluster =>
+                    cluster.accountId === accountId
+            );
+
         }
 
-        accounts = [account];
-    } else {
-        accounts = await getAccounts(organizationId);
+        return cached;
+
     }
+
+    console.log("EKS CACHE MISS");
+
+    const accounts =
+        await getAccounts(
+            organizationId
+        );
 
     const clusters = await Promise.all(
         accounts.map(async account => {
@@ -69,67 +80,46 @@ export const getEksClustersFromOrganization = async (
             );
         })
     );
-    return clusters.flat();
+    const allClusters =
+        clusters.flat();
+
+    setCache(
+        cacheKey,
+        allClusters
+    );
+
+    if (accountId && accountId !== "all") {
+
+        return allClusters.filter(
+            cluster =>
+                cluster.accountId === accountId
+        );
+
+    }
+
+    return allClusters;
 };  
 
 
-export const getEksClustersByIdFromOrganization = async (
+export const getEksClusterByIdFromOrganization = async (
     organizationId: string,
     region: string,
     clusterId: string,
     accountId?: string
 ) => {
-    let accounts;
 
-    if (accountId && accountId !== "all") {
-        const account = await getAccountsById(
+    const clusters =
+        await getEksClustersFromOrganization(
             organizationId,
+            region,
             accountId
         );
 
-        if (!account) {
-            return [];
-        }
+    return clusters.find(
+        cluster =>
+            cluster.id === clusterId
+    );
 
-        accounts = [account];
-    } else {
-        accounts = await getAccounts(organizationId);
-    }
-    
-    for (const account of accounts) {
-
-        const credentials = 
-            await getAccountCredentials(organizationId, account.id)
-
-        const eksContext: EksContext = {
-
-            organizationId,
-
-            accountId: account.id,
-            accountName: account.name,
-
-            region, 
-
-            ec2Client: createEc2Client(credentials, region),
-
-            eksClient: createEksClient(credentials, region),
-
-            cloudWatchClient: createCloudWatchClient(credentials, region),
-
-            autoScalingClient: createAutoScalingClient(credentials, region),
-
-        };
-        const cluster = 
-            await getEksClusterById(
-                eksContext,
-                clusterId
-            )
-        
-        if (cluster){
-            return cluster;
-        }
-    }
-    return undefined
 };
 
 
@@ -141,58 +131,18 @@ export const getEksNodeGroupByIdFromOrganization = async (
     accountId?: string
 ) => {
 
-    let accounts;
-
-    if (accountId && accountId !== "all") {
-        const account = await getAccountsById(
+    const cluster =
+        await getEksClusterByIdFromOrganization(
             organizationId,
+            region,
+            clusterId,
             accountId
         );
 
-        if (!account) {
-            return [];
-        }
-
-        accounts = [account];
-    } else {
-        accounts = await getAccounts(organizationId);
-    }
-    
-    for (const account of accounts) {
-
-        const credentials = 
-            await getAccountCredentials(organizationId, account.id)
-
-        const eksContext: EksContext = {
-
-            organizationId,
-
-            accountId: account.id,
-            accountName: account.name,
-
-            region, 
-
-            ec2Client: createEc2Client(credentials, region),
-
-            eksClient: createEksClient(credentials, region),
-
-            cloudWatchClient: createCloudWatchClient(credentials, region),
-
-            autoScalingClient: createAutoScalingClient(credentials, region),
-
-        };
-        const nodeGroup = 
-            await getEksNodeGroupById(
-                eksContext,
-                clusterId,
-                nodeGroupId
-            )
-        
-        if (nodeGroup){
-            return nodeGroup;
-        }
-    }
-    return undefined
+    return cluster?.nodeGroups.find(
+        nodeGroup =>
+            nodeGroup.name === nodeGroupId
+    );
 };
 
 
@@ -207,57 +157,17 @@ export const getEksNodeByIdFromOrganization = async (
 
 ) => {
 
-    let accounts;
-
-    if (accountId && accountId !== "all") {
-        const account = await getAccountsById(
+    const nodeGroup =
+        await getEksNodeGroupByIdFromOrganization(
             organizationId,
+            region,
+            clusterId,
+            nodeGroupId,
             accountId
         );
 
-        if (!account) {
-            return [];
-        }
-
-        accounts = [account];
-    } else {
-        accounts = await getAccounts(organizationId);
-    }
-    
-    for (const account of accounts) {
-
-        const credentials = 
-            await getAccountCredentials(organizationId, account.id)
-
-        const eksContext: EksContext = {
-
-            organizationId,
-
-            accountId: account.id,
-            accountName: account.name,
-
-            region, 
-
-            ec2Client: createEc2Client(credentials, region),
-
-            eksClient: createEksClient(credentials, region),
-
-            cloudWatchClient: createCloudWatchClient(credentials, region),
-
-            autoScalingClient: createAutoScalingClient(credentials, region),
-
-        };
-        const node = 
-            await getEksNodeById(
-                eksContext,
-                clusterId,
-                nodeGroupId,
-                nodeId
-            )
-        
-        if (node){
-            return node;
-        }
-    }
-    return undefined
+    return nodeGroup?.nodes.find(
+        node =>
+            node.id === nodeId
+    );
 };

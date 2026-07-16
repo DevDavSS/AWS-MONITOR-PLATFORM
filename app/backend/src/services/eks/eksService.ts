@@ -50,6 +50,7 @@ export const getEksClusters = async (
                 name,
 
                 account: EksContext.accountName,
+                accountId: EksContext.accountId,
                 organization: EksContext.organizationId,
                 region: EksContext.region,
 
@@ -85,57 +86,4 @@ export const getEksClusters = async (
         })
     );
 };
-
-export const getEksClusterById = async (
-    eksContext: EksContext,
-    id: string,
-) => {
-
-    const clusters =
-        await getEksClusters(eksContext);
-
-    return clusters.find(
-        cluster => cluster.id === id
-    );
-};
-
-export const getEksNodeGroupById = async (
-    eksContext: EksContext,
-    clusterId: string,
-    nodeGroupId: string
-) => {
-
-    const cluster =
-        await getEksClusterById(eksContext,clusterId);
-
-    if (!cluster) {
-        return undefined;
-    }
-
-    return cluster.nodeGroups.find(
-        nodeGroup =>
-            nodeGroup.name === nodeGroupId
-    );
-}
-
-export const getEksNodeById = async (
-    eksContext: EksContext,
-    clusterId: string,
-    nodeGroupId: string,
-    nodeId: string,
-) => {
-
-    const cluster =
-        await getEksClusterById(eksContext,clusterId);
-    const nodeGroup = 
-        await getEksNodeGroupById(eksContext,clusterId, nodeGroupId)
-        
-    if (!cluster || !nodeGroup) {
-        return undefined;
-    }
-    return nodeGroup.nodes.find(
-        node =>
-            node.id === nodeId
-    );
-}
 

@@ -4,6 +4,9 @@ import type { ReactNode } from "react";
 type HeaderContextType = {
   extraFilters: ReactNode;
   setExtraFilters: (filters: ReactNode) => void;
+
+  filtersEnabled: boolean;
+  setFiltersEnabled: (enabled: boolean) => void;
 };
 
 const HeaderContext = createContext<HeaderContextType | null>(null);
@@ -15,11 +18,17 @@ export function HeaderProvider({
 }) {
   const [extraFilters, setExtraFilters] = useState<ReactNode>(null);
 
+  const [filtersEnabled, setFiltersEnabled] =
+    useState(true);
+
   return (
     <HeaderContext.Provider
       value={{
         extraFilters,
         setExtraFilters,
+
+        filtersEnabled,
+        setFiltersEnabled,
       }}
     >
       {children}

@@ -14,16 +14,16 @@ export interface MetricPoint {
 
 /* Node Group Interface */
 export interface NodeGroup {
-  name:         string; //OK
+  name:         string; 
 
-  status:       string; //OK
+  status:       string; 
 
-  desiredSize:  number; //OK
-  minSize:      number; //OK
-  maxSize:      number; //OK
-  totalNodes:   number; //OK
+  desiredSize:  number; 
+  minSize:      number; 
+  maxSize:      number; 
+  totalNodes:   number; 
 
-  instanceType: string; //OK
+  instanceType: string; 
   
   avgCurrentMetrics: {
     cpu:        number;        /*AVG cpu percentage */
@@ -44,24 +44,25 @@ export interface NodeGroup {
 
 /* EKS Cluster Interface */
 export interface EksCluster {
-  id:           string; //OK
+  id:           string; 
 
-  name:         string; //ok
+  name:         string; 
 
-  account:      string; //wait
-  organization: string; //wait
-  region:       string; //wait
+  account:      string; 
+  accountId:    string;
+  organization: string; 
+  region:       string; 
 
-  status:       string; //ok
+  status:       string; 
 
-  version:      string; //ok
+  version:      string; 
 
-  endpoint:     string; //ok
+  endpoint:     string; 
 
-  totalDesired: number; //ok
-  totalReady:   number; //ok
-  nodeGroupCount: number; //ok
-  nodeCount: number; //ok
+  totalDesired: number; 
+  totalReady:   number; 
+  nodeGroupCount: number; 
+  nodeCount: number; 
 
   avgCurrentMetrics: {
     cpu:        number;        /*AVG cpu percentage */ 
@@ -77,6 +78,6 @@ export interface EksCluster {
     network:    MetricPoint[];
   };
 
-  nodeGroups: NodeGroup[]; //ok
+  nodeGroups: NodeGroup[]; 
 
 }

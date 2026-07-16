@@ -11,18 +11,29 @@ import { Input } from "@/components/ui/input";
 import MetricsCard from "@/components/shared/CurrentMetricCard";
 import InfoCard from "@/components/shared/InfoCard";
 import { useFilters } from "@/contexts/FilterContext";
+import { useHeader } from "@/components/layout/HeaderContext";
 
 
 export default function EksDetail(){
     const navigate = useNavigate();
     const {EksClusterId} = useParams();
 
+    const { setFiltersEnabled } = useHeader();
     const [search, setSearch] = useState("");
     /* Backend */
     const [eksCluesterById, setEksCluster] = useState<EksCluster | null>(null);
     const [loading, setLoading] = useState(true);
 
     const { filters } = useFilters();
+
+    /* Desahabilitar filtros del encabezado */
+    useEffect(() => {
+      setFiltersEnabled(false);
+
+      return () => {
+        setFiltersEnabled(true);
+      };
+    }, []);
 
     useEffect(() => {
         async function loadEksClusterById() {

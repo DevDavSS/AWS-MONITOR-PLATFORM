@@ -11,6 +11,7 @@ export interface RdsDatabase {
   clusterIdentifier:  string;
 
   account:        string;
+  accountId:        string;
   organization:   string;
   region:         string;
 

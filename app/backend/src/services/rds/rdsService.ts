@@ -85,6 +85,7 @@ return Promise.all(
           clusterIdentifier: clusterId,
 
           account: rdsConstext.accountName,
+          accountId: rdsConstext.accountId,
           organization: rdsConstext.organizationId,
           region: rdsConstext.region,
 
@@ -133,19 +134,4 @@ return Promise.all(
       })
     )
 );
-};
-
-export const getAuroraRDSById = async (
-  id: string,
-  rdsContezt: RdsContext
-) => {
-
-  const databases =
-    await getAuroraRDSAws(
-      rdsContezt
-    );
-
-  return databases.find(
-    database => database.id === id
-  );
 };

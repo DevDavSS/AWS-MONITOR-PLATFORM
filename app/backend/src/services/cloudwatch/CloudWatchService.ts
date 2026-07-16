@@ -55,9 +55,6 @@ export const getCpuMetrics = async (
     })
     );
 
-    console.log(
-    response_1.Metrics?.slice(0, 20)
-    );
     
     const history = result?.Timestamps?.map(
     (time, index) => ({

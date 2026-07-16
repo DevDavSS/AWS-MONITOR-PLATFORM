@@ -5,10 +5,11 @@ import {
 
 import { getAccountCredentials } from "../organizations/accountService";
 import { getAccounts, getAccountsById } from "../organizations/organizationService";
+import { getCache,setCache } from "../../cache/resourceCache";
+import type { RdsDatabase } from "../../types/rds";
 
 import { 
     getAuroraRDSAws, 
-    getAuroraRDSById 
 } from "./rdsService";
 
 import { RdsContext } from "../../types/awsConstext";
@@ -20,22 +21,35 @@ export const getAuroraRdsFromOrganization = async (
     accountId?: string
 ) => {
 
-    let accounts;
+    const cacheKey =
+        `rds:${organizationId}:${region}`;
 
-    if (accountId && accountId !== "all") {
-        const account = await getAccountsById(
-            organizationId,
-            accountId
-        );
+    const cached =
+        getCache<RdsDatabase[]>(cacheKey);
 
-        if (!account) {
-            return [];
+    if (cached) {
+
+        console.log("RDS CACHE HIT");
+
+        if (accountId && accountId !== "all") {
+            return cached.filter(
+                instance =>
+                    instance.accountId === accountId
+            );
+
         }
 
-        accounts = [account];
-    } else {
-        accounts = await getAccounts(organizationId);
+        return cached;
+
     }
+
+    console.log("RDS CACHE MISS");
+
+    const accounts =
+        await getAccounts(
+            organizationId
+        );
+
     const auroraRdsInstances = await Promise.all(
 
         accounts.map(async account => {
@@ -65,7 +79,24 @@ export const getAuroraRdsFromOrganization = async (
             );
         })
     )
-    return auroraRdsInstances.flat();
+    const allInstances =
+        auroraRdsInstances.flat();
+
+    setCache(
+        cacheKey,
+        allInstances
+    );
+
+    if (accountId && accountId !== "all") {
+
+        return allInstances.filter(
+            instance =>
+                instance.account === accountId
+        );
+
+    }
+
+    return allInstances;
 };
 
 export const getAuroraRdsFromOrganizationById = async (
@@ -74,59 +105,15 @@ export const getAuroraRdsFromOrganizationById = async (
     auroraRdsInstanceId: string,
     accountId?: string
 ) => {
-    let accounts;
-
-    if (accountId && accountId !== "all") {
-        const account = await getAccountsById(
+    const instances =
+        await getAuroraRdsFromOrganization(
             organizationId,
+            region,
             accountId
         );
 
-        if (!account) {
-            return [];
-        }
-
-        accounts = [account];
-    } else {
-        accounts = await getAccounts(organizationId);
-    }
-    
-    for (const account of accounts){
-        const credentials =
-            await getAccountCredentials(organizationId, account.id)
-        const rdsConstext: RdsContext = {
-
-            organizationId,
-
-            accountId: account.id,
-
-            accountName: account.name,
-
-            region,
-            
-            rdsClient:
-                createRdsClient(
-                    credentials,
-                    region
-                ),
-
-            cloudWatchClient: 
-                createCloudWatchClient(
-                    credentials,
-                    region
-                ),
-            
-        };
-
-        const auroraRdsInstance = 
-            await getAuroraRDSById(
-                auroraRdsInstanceId,
-                rdsConstext
-            )
-        if (auroraRdsInstance) {
-            return auroraRdsInstance
-        }
-    }
-
-    return undefined;
+    return instances.find(
+        instance =>
+            instance.id === auroraRdsInstanceId
+    );
 };

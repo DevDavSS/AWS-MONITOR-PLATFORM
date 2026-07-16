@@ -12,17 +12,27 @@ import ResourceCard from "@/components/dashboard/ResourceCard";
 import DataTable from "@/components/shared/DataTable";
 import { Input } from "@/components/ui/input";
 import { useFilters } from "@/contexts/FilterContext";
+import { useHeader } from "@/components/layout/HeaderContext";
 
 export default function(){
     const navigate = useNavigate();
     const { EksClusterId, EksNodeGroupId } = useParams();
     const [search, setSearch] = useState("");
     const { filters } = useFilters();
+    const { setFiltersEnabled } = useHeader();
 
     /* Backend */
     const [eksNodeGroupById, setNodeGroup] = useState<NodeGroup | null>(null);
     const [loading, setLoading] = useState(true);
     
+    /* Desahabilitar filtros del encabezado */
+    useEffect(() => {
+      setFiltersEnabled(false);
+
+      return () => {
+        setFiltersEnabled(true);
+      };
+    }, []);
 
     useEffect(() => {
         async function loadNodeGroupById() {

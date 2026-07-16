@@ -9,6 +9,7 @@ import Tabs from "@/components/shared/Tabs";
 import InfoCard from "@/components/shared/InfoCard";
 import { getEksNodeById } from "@/services/eksService";
 import { useFilters } from "@/contexts/FilterContext";
+import { useHeader } from "@/components/layout/HeaderContext";
 
 export default function EKSNode() {
   const navigate = useNavigate();
@@ -21,6 +22,16 @@ export default function EKSNode() {
 
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("monitoring");
+  const { setFiltersEnabled } = useHeader();
+
+  /* Desahabilitar filtros del encabezado */
+  useEffect(() => {
+    setFiltersEnabled(false);
+
+    return () => {
+      setFiltersEnabled(true);
+    };
+  }, []);
 
   useEffect(() => {
     async function loadInstanceById() {

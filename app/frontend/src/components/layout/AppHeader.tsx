@@ -21,7 +21,7 @@ interface Account {
 }
 
 export default function AppHeader() {
-  const { extraFilters } = useHeader();
+  const { extraFilters, filtersEnabled } = useHeader();
   const [organizations, setOrganizations] = useState<Organization[]>([]);
 
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -98,14 +98,15 @@ export default function AppHeader() {
           </h1>
 
           <div className="flex gap-4">
-          <Select
+            <Select
+            disabled={!filtersEnabled}
             value={filters.organizationId}
             onValueChange={(value) => {
-              if (value !== null) {
+                if (value !== null) {
                 setOrganization(value);
-              }
+                }
             }}
-          >
+            >
               <SelectTrigger className="w-56">
                   <SelectValue placeholder="Select Organization" />
               </SelectTrigger>
@@ -126,7 +127,9 @@ export default function AppHeader() {
               </SelectContent>
 
           </Select>
-        <Select
+          
+            <Select
+            disabled={!filtersEnabled}
             value={filters.accountId ?? "all"}
             onValueChange={(value) => {
                 setAccount(value || "all");
@@ -156,16 +159,16 @@ export default function AppHeader() {
             </SelectContent>
 
         </Select>
-          <Select
-              value={filters.region}
-              onValueChange={(value) => {
 
-                  if (value) {
-                      setRegion(value);
-                  }
-
-              }}
-          >
+            <Select
+            disabled={!filtersEnabled}
+            value={filters.region}
+            onValueChange={(value) => {
+                if (value) {
+                setRegion(value);
+                }
+            }}
+            >
               <SelectTrigger className="w-48">
                   <SelectValue placeholder="Select Region" />
               </SelectTrigger>
