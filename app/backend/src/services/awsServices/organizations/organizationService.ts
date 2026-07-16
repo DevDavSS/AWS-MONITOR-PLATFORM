@@ -45,14 +45,14 @@ export const getAccounts = async (
     }));
 }
 
-export const getAccountsById = async (
-    organizationId: string,
-    accountId: string
-) => {
+// export const getAccountsById = async (
+//     organizationId: string,
+//     accountId: string
+// ) => {
 
-    const accounts = await getAccounts(organizationId);
+//     const accounts = await getAccounts(organizationId);
 
-    return accounts.find(
-        account => account.id === accountId
-    );
-}
+//     return accounts.find(
+//         account => account.id === accountId
+//     );
+// }

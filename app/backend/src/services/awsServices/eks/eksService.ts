@@ -54,11 +54,11 @@ export const getEksClusters = async (
                 organization: EksContext.organizationId,
                 region: EksContext.region,
 
-                status: cluster.cluster?.status,
+                status: cluster.cluster?.status!,
 
-                version: cluster.cluster?.version,
+                version: cluster.cluster?.version!,
 
-                endpoint: cluster.cluster?.endpoint,
+                endpoint: cluster.cluster?.endpoint!,
 
                 nodeGroupCount: nodeGroups.length,
 

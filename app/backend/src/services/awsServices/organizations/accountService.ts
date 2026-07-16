@@ -13,7 +13,8 @@ import {
 // Obtener credenciales STS de una cuenta miembro
 export const getAccountCredentials = async (
     organizationId: string,
-    accountId: string
+    accountId: string,
+    region?: string
 ): Promise<AwsCredentials> => {
 
     const cacheKey =
@@ -27,10 +28,10 @@ export const getAccountCredentials = async (
         cachedCredentials.expiration.getTime() >
             Date.now() + 30_000
     ) {
-        console.log(`STS Cache HIT -> ${cacheKey}`);
+        console.log(`STS Cache HIT -> ${cacheKey} -> ${region}`);
         return cachedCredentials;
     }
-    console.log(`STS Cache MISS -> ${cacheKey}`);
+    console.log(`STS Cache MISS -> ${cacheKey} -> ${region}`);
     const managementCredentials =
         await assumeManagementRole(
             organizationId

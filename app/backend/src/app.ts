@@ -5,6 +5,8 @@ import ec2Routes from "./routes/ec2Routes";
 import rdsRoutes from "./routes/rdsRoutes"
 import eksRoutes from "./routes/eksRoutes"
 
+import { startResourceScheduler } from "./scheduler/resourceScheduler";
+
 const app = express();
 
 app.use(cors());
@@ -54,6 +56,7 @@ const PORT = 3000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  startResourceScheduler();
 });
 
 
