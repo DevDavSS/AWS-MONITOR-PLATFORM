@@ -3,8 +3,8 @@ import {
     AssumeRoleCommand
 } from "@aws-sdk/client-sts";
 
-import { AwsCredentials } from "../../../types/services/aws";
-import {organizations} from "../../../config/organizations"
+import { AwsCredentials } from "../../../../types/services/aws";
+import {organizations} from "../../../../config/organizations"
 
 
 

@@ -5,7 +5,7 @@ import {
 } from "@aws-sdk/client-eks";
 import { getNodesFromNodeGroup } from "./nodeAsgService";
 import { getAverageMetrics } from "./metricsService";
-import { EksContext } from "../../../types/services/awsConstext";
+import { EksContext } from "../../../../types/services/awsConstext";
 
 export const getNodeGroups = async (
     eksContext: EksContext,

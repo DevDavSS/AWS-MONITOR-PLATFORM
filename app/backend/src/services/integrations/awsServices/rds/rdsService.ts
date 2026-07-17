@@ -20,7 +20,7 @@ import {
 
 } from "../cloudwatch/CloudWatchService";
 
-import { RdsContext } from "../../../types/services/awsConstext";
+import { RdsContext } from "../../../../types/services/awsConstext";
 
 export const getAuroraRDSAws = async (
   rdsConstext: RdsContext

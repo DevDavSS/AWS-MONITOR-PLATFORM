@@ -1,4 +1,4 @@
-const CACHE_TTL = 2 * 60 * 1000; // 2 minutos
+const CACHE_TTL = 5 * 60 * 1000; // 2 minutos
 
 interface CacheEntry<T> {
     data: T;
@@ -54,3 +54,7 @@ export const clearCache = () => {
     resourceCache.clear();
 
 };
+
+export const getAllCache = () => {
+    return resourceCache;
+}

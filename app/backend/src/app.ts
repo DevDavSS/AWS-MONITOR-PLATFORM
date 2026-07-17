@@ -4,6 +4,7 @@ import organiazationRoute from "./routes/organizationsRoutes"
 import ec2Routes from "./routes/ec2Routes";
 import rdsRoutes from "./routes/rdsRoutes"
 import eksRoutes from "./routes/eksRoutes"
+import resourceSnapshotRoutes from "./routes/resourceSnapshotRoutes";
 
 import { startResourceScheduler } from "./scheduler/resourceScheduler";
 
@@ -50,6 +51,11 @@ app.get("/", (_, res) => {
   });
 });
 
+/* Rutas para la generacion y consulta de los Resource Snaphots */
+app.use(
+    "/api/resources/snapshots",
+    resourceSnapshotRoutes
+);
 
 
 const PORT = 3000;

@@ -203,6 +203,8 @@ interface Alert {
 
     accountId: string;
 
+    region: string
+
     service: AlertService;                // Que servicio pertenece el recurso que salto la alerta
 
     resourceType: ResourceType;           // Tipo de Recurso que activo la alerta
@@ -315,23 +317,19 @@ Cada Snapshot contiene toda la información necesaria para evaluar las reglas co
 
 Flujo
 ``` text
-AWS
-
-↓
-
-Aggregators
-
-↓
-
+Scheduler
+      │
+      ▼
 Resource Cache
-
-↓
-
-Resource Snapshot
-
-↓
-
-Alert Engine
+      │
+      ▼
+ResourceSnapshotService
+      │
+      ▼
+ResourceSnapshot[]
+      │
+      ▼
+AlertEngine
 ```
 ---
 ## 5.2 Caracteristicas
@@ -345,19 +343,26 @@ Alert Engine
 ## 5.3 Interfaz
 
 Esta interfaz intenta abarcar todas las interfaces distintas de cada servicio (EC2,RDS,EKS,Meraki)
+Su única responsabilidad es construir una coleccion homogénea de ResourceSanpshot.
+
 ``` typescript
 interface ResourceSnapshot {
 
-    service: AlertService;
+    organizationId: string;
 
-    resourceType: ResourceType;
+    accountId: string;    
+
+    region: string;
+    
+    service: AlertService
+
+    resourceType: ResourceType
 
     resourceId: string;
 
     resourceName: string;
 
-    metrics: Record<string, number>;
-
+    metricas: Record<string, number>; 
 }
 ```
 ---
@@ -441,47 +446,56 @@ EKS Cluster:
 }
 ```
 --- 
-## 5.5 ResourceSnapshotService
+## 5.5 Resource Snapshot Service
 
 Este es el servicio que se dedica a construir el snapshot de los recursos utilizando el caché creado por el backend del app.
 
+---
+
+# 6. Runtime Rule Resolver
 
 ---
 
-# 6. Alert Engine
+# 7. Alert Evaluator
+
+
 
 ---
 
-# 7. Configuración de Reglas
+# 8. Alert Engine
 
 ---
 
-# 8. Evaluación de Alertas
+# 9. Configuración de Reglas
 
 ---
 
-# 9. Persistencia
+# 10. Evaluación de Alertas
 
 ---
 
-# 10. Notification Service
+# 11. Persistencia
 
 ---
 
-# 11. API REST
+# 12. Notification Service
 
 ---
 
-# 12. Frontend
+# 13. API REST
 
 ---
 
-# 13. Flujo General
+# 14. Frontend
 
 ---
 
-# 14. Consideraciones de Escalabilidad
+# 15. Flujo General
 
 ---
 
-# 15. Trabajo Futuro
+# 16. Consideraciones de Escalabilidad
+
+---
+
+# 17. Trabajo Futuro

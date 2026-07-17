@@ -1,18 +1,18 @@
 import { 
     createCloudWatchClient, 
     createEc2Client, 
-} from "../../../aws/clientFactory";
+} from "../../../../aws/clientFactory";
 
 import { getAccountCredentials } from "../organizations/accountService";
 import { getAccounts } from "../organizations/organizationService";
-import { getCache,setCache } from "../../../cache/resourceCache";
+import { getCache,setCache } from "../../../../cache/resourceCache";
 
 import { 
     getEc2InstancesAws ,
 } from "./ec2Service";
 
-import { Ec2Context } from "../../../types/services/awsConstext";
-import { EC2Instance } from "../../../types/services/ec2";
+import { Ec2Context } from "../../../../types/services/awsConstext";
+import { EC2Instance } from "../../../../types/services/ec2";
 
 /* Funcion encargada de recuperar o crear cache de los recursos */
 export const refreshEc2OrganizationCache = async (

@@ -1,9 +1,9 @@
 import { organizations } from "../../config/organizations"
 import { regions } from "../../config/regions"
 
-import { refreshEc2OrganizationCache } from "../awsServices/ec2/ec2AgregatorService"
-import { getAuroraRdsFromOrganization } from "../awsServices/rds/rdsAgregatorService"
-import { getEksClustersFromOrganization } from "../awsServices/eks/eksAgregatorService"
+import { refreshEc2OrganizationCache } from "../integrations/awsServices/ec2/ec2AgregatorService"
+import { refreshRdsOrganizationCache } from "../integrations/awsServices/rds/rdsAgregatorService"
+import { refreshEksOrganizationCache } from "../integrations/awsServices/eks/eksAgregatorService"
 
 
 
@@ -30,10 +30,9 @@ export const refreshRdsResources = async () => {
 
         for (const region of regions) {
 
-            await getAuroraRdsFromOrganization(
+            await refreshRdsOrganizationCache(
                 organization.id,
                 region,
-                "all"
             );
 
         }
@@ -48,10 +47,9 @@ export const refreshEksResources = async () => {
 
         for (const region of regions) {
 
-            await getEksClustersFromOrganization(
+            await refreshEksOrganizationCache(
                 organization.id,
                 region,
-                "all"
             );
 
         }

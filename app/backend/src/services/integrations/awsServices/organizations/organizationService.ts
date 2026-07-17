@@ -1,7 +1,7 @@
 import { ListAccountsCommand } from "@aws-sdk/client-organizations";
 import { assumeManagementRole } from "./roleService";
-import { createOrganizationsClient } from "../../../aws/clientFactory";
-import { OrganizationAccount } from "../../../types/services/organization";
+import { createOrganizationsClient } from "../../../../aws/clientFactory";
+import { OrganizationAccount } from "../../../../types/services/organization";
 
 
 export const getAccounts = async (

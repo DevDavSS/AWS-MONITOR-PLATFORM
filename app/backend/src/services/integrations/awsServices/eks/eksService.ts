@@ -5,7 +5,7 @@ import {
 
 import { getNodeGroups } from "./nodeGroupsService";
 import { getAverageMetrics } from "./metricsService";
-import { EksContext } from "../../../types/services/awsConstext";
+import { EksContext } from "../../../../types/services/awsConstext";
 
 
 export const getEksClusters = async (

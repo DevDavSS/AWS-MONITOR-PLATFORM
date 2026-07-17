@@ -1,7 +1,7 @@
 import {
   DescribeInstancesCommand,
 } from "@aws-sdk/client-ec2";
-import { awsBaseContext } from "../../../types/services/awsConstext";
+import { awsBaseContext } from "../../../../types/services/awsConstext";
 import { getCpuMetrics, getMemoryMetrics,getDiskUsageMetric, getNetworkTraffic } from "../cloudwatch/CloudWatchService";
 
 function getTag(
@@ -72,6 +72,7 @@ export const getEc2InstancesAws = async (
         account: context.accountName,
         accountId: context.accountId,
         organization: context.organizationId,
+        region: context.region,
 
         type: instance.InstanceType ?? "",
 

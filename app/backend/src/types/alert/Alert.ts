@@ -36,6 +36,7 @@ type AlertService =
 
 type ResourceType =
     | "instance"
+    | "database"
     | "cluster"
     | "nodegroup"
     | "node"

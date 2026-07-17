@@ -1,4 +1,4 @@
-import { AwsCredentials } from "../../../types/services/aws";
+import { AwsCredentials } from "../../../../types/services/aws";
 
 import {
     assumeManagementRole,
@@ -8,7 +8,7 @@ import {
 import {
     getCredentials,
     setCredentials
-} from "../../../cache/credentialCache";
+} from "../../../../cache/credentialCache";
 
 // Obtener credenciales STS de una cuenta miembro
 export const getAccountCredentials = async (

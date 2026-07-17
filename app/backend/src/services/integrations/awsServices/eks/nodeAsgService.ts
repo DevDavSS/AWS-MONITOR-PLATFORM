@@ -1,6 +1,6 @@
 import { DescribeNodegroupCommand } from "@aws-sdk/client-eks";
 import { DescribeAutoScalingGroupsCommand } from "@aws-sdk/client-auto-scaling";
-import { EksContext } from "../../../types/services/awsConstext";
+import { EksContext } from "../../../../types/services/awsConstext";
 import { getEc2InstancesAws } from "../ec2/ec2Service";
 
 

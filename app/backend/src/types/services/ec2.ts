@@ -10,6 +10,7 @@ export interface EC2Instance {
   name: string;
   account: string;
   accountId: string;
+  region: string; 
   organization: string;
   type: string;
   status: string;
