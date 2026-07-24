@@ -1,0 +1,2 @@
+servername = alert-database-server
+password = Arg3ntinaPerdi02026.^_^
