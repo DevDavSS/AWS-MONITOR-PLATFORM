@@ -5,12 +5,42 @@ import type { EksCluster } from "@/types/eks";
 import { useEffect, useState } from "react";
 import { getEksClusters } from "@/services/eksService";
 import { useFilters } from "@/contexts/FilterContext";
+import Tabs from "@/components/shared/Tabs";
+import AlertPanel from "@/components/alerts/AlertPanel";
+import RulePanel from "@/components/rules/rulesPanel";
+import type { RuleSelectableResource } from "@/types/RuleSelectableResource";
+
 
 export default function EKS(){
     const [EksClusters, setEksClusters] = useState<EksCluster[]>([]);
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const { filters } = useFilters();
+
+  // Atributos  a  mostrar en tabal de oonstancias para el creador de reglas
+  const selectableResources: RuleSelectableResource[] =
+
+      EksClusters.map(eksCluster => ({
+
+          id: eksCluster.id,
+
+          name: eksCluster.name,
+
+          account: eksCluster.accountId,
+
+          accountName: eksCluster.account,
+
+          region: eksCluster.region
+
+      }));
+    /* Componente de pestañas dinámico */
+    const tabs = [
+    { id: "clusters", label: "Clusters" },
+    { id: "alerts", label: "Alerts" },
+    { id: "rules", label: "Rules" },
+
+    ];
+    const [activeTab, setActiveTab] = useState("clusters");
 
     useEffect(() => {
     async function loadInstances() {
@@ -72,14 +102,46 @@ export default function EKS(){
                 <ResourceCard title="Nodes" value={nodes} />
                 <ResourceCard title="Healthy Clusters" value={healthyClusters} />        
             </div>
-            <Input
-                placeholder="Search Cluster..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="max-w-md"
+            {/* Selector de pestañas, y rednerizado segun pestaña seleccionada */}
+            <Tabs
+                tabs={tabs}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
             />
-            <EksTable EksClusterId={filteredEksClusters}/>
 
+            {activeTab === "clusters"&&(
+                <>
+                <Input
+                    placeholder="Search Cluster..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="max-w-md"
+                />
+                <EksTable EksClusterId={filteredEksClusters}/>        
+                </>
+            )}
+            {activeTab ===  "alerts" &&(
+                <>
+                <AlertPanel
+                    service="eks"
+                />
+                </>
+            )}
+            {activeTab === "rules"&& (
+
+                <>
+            <RulePanel
+
+                service="eks"
+
+                resourceType="cluster"
+
+                resources={selectableResources}
+
+            />
+                </>
+
+            )}
         </div> 
     )
 }

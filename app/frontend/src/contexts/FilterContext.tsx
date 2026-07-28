@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 
 export interface AwsFilters {
@@ -12,6 +12,7 @@ export interface AwsFilters {
 }
 
 interface FilterContextType {
+    setEffectiveAccount: (accountId?: string) => void;
 
     filters: AwsFilters;
 
@@ -30,17 +31,42 @@ export function FilterProvider({
 }: {
     children: ReactNode;
 }) {
+    const setEffectiveAccount = (accountId?: string) =>
 
-    const [filters, setFilters] = useState<AwsFilters>({
+        setFilters(prev => ({
 
-        organizationId: "ION-Banco",
+            ...prev,
 
-        accountId: "all",
+            accountId
 
-        region: "us-west-2",
+        }));
+const [filters,setFilters] = useState<AwsFilters>(() => {
 
-    });
+    const saved = localStorage.getItem("aws-filters");
 
+    console.log("FILTERS INIT:", saved);
+
+    if(saved){
+        return JSON.parse(saved);
+    }
+
+    return {
+        organizationId:"",
+        accountId:"all",
+        region:"us-east-1"
+    };
+
+});
+useEffect(() => {
+
+    console.log("FILTERS CHANGE:", filters);
+
+    localStorage.setItem(
+        "aws-filters",
+        JSON.stringify(filters)
+    );
+
+}, [filters]);
     const setOrganization = (organizationId: string) =>
 
         setFilters(prev => ({
@@ -70,6 +96,7 @@ export function FilterProvider({
                 setOrganization,
                 setAccount,
                 setRegion,
+                setEffectiveAccount
             }}
         >
             {children}

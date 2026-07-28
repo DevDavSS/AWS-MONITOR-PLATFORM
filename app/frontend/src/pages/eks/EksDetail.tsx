@@ -12,7 +12,7 @@ import MetricsCard from "@/components/shared/CurrentMetricCard";
 import InfoCard from "@/components/shared/InfoCard";
 import { useFilters } from "@/contexts/FilterContext";
 import { useHeader } from "@/components/layout/HeaderContext";
-
+import RulePanel from "@/components/rules/rulesPanel";
 
 export default function EksDetail(){
     const navigate = useNavigate();
@@ -24,7 +24,7 @@ export default function EksDetail(){
     const [eksCluesterById, setEksCluster] = useState<EksCluster | null>(null);
     const [loading, setLoading] = useState(true);
 
-    const { filters } = useFilters();
+    const {filters,setEffectiveAccount} = useFilters();
 
     /* Desahabilitar filtros del encabezado */
     useEffect(() => {
@@ -32,6 +32,8 @@ export default function EksDetail(){
 
       return () => {
         setFiltersEnabled(true);
+
+        setEffectiveAccount("all");    
       };
     }, []);
 
@@ -41,6 +43,7 @@ export default function EksDetail(){
         if (EksClusterId) {
             const data = await getEksClustersById(EksClusterId,filters);
             setEksCluster(data);
+            setEffectiveAccount(data.accountId);
         }
         } catch (error) {
         console.error(error);
@@ -50,14 +53,13 @@ export default function EksDetail(){
         }
 
         loadEksClusterById();
-    }, [EksClusterId, filters])
+    }, [EksClusterId])
     
     /* Componente de pestañas dinámico */
     const tabs = [
     { id: "monitoring", label: "Monitoring" },
     { id: "compute", label: "Compute" },
-    { id: "resources", label: "Resources" },
-    { id: "events", label: "Events" },
+    { id: "rules", label: "Rules" },
     ];
     const [activeTab, setActiveTab] = useState("monitoring");
 
@@ -268,17 +270,28 @@ export default function EksDetail(){
                 </div>
             
             )}
+            {activeTab === "rules" && eksCluesterById && (
 
-            {activeTab === "resources" && (
-                <div className="rounded-lg border p-8 text-center text-muted-foreground">
-                    Coming Soon
-                </div>
-            )}
+                <RulePanel
 
-            {activeTab === "events" && (
-                <div className="rounded-lg border p-8 text-center text-muted-foreground">
-                    Coming Soon
-                </div>
+                    service="eks"
+
+                    resourceType="cluster"
+
+                    resourceId={eksCluesterById.id}
+
+                    resources={[
+                        {
+                            id: eksCluesterById.id,
+                            name: eksCluesterById.name,
+                            account: eksCluesterById.accountId,
+                            accountName: eksCluesterById.account,
+                            region: filters.region
+                        }
+                    ]}
+
+                />
+
             )}
 
 

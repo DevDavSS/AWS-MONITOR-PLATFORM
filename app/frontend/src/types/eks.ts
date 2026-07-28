@@ -16,6 +16,8 @@ export interface MetricPoint {
 export interface NodeGroup {
   name:         string;
 
+  accountId:    string;
+  accountName:      string;
   status:       string;
 
   desiredSize:  number;
@@ -49,6 +51,7 @@ export interface EksCluster {
   name:         string;
 
   account:      string;
+  accountId:    string;
   organization: string;
   region:       string;
 

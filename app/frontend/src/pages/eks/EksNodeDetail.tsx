@@ -10,6 +10,8 @@ import InfoCard from "@/components/shared/InfoCard";
 import { getEksNodeById } from "@/services/eksService";
 import { useFilters } from "@/contexts/FilterContext";
 import { useHeader } from "@/components/layout/HeaderContext";
+import RulePanel from "@/components/rules/rulesPanel";
+
 
 export default function EKSNode() {
   const navigate = useNavigate();
@@ -102,7 +104,7 @@ export default function EKSNode() {
     /* Componente de pestañas dinámico */
     const tabs = [
     { id: "monitoring", label: "Monitoring" },
-    { id: "warnings", label: "Warnings" },
+    { id: "rules", label: "Rules" },
     ];
 
 
@@ -173,12 +175,28 @@ export default function EKSNode() {
         </div>
         </>
         )}
-        {activeTab === "warnings" && (
-          <>
-            <div className="rounded-lg border p-8 text-center text-muted-foreground">
-                Coming Soon
-            </div>
-          </>
+        {activeTab === "rules" && instanceById && (
+
+            <RulePanel
+
+                service="eks"
+
+                resourceType="node"
+                
+                resourceId={instanceById.id}
+
+                resources={[
+                    {
+                        id: instanceById.id,
+                        name: instanceById.name,
+                        account: instanceById.accountId,
+                        accountName: instanceById.account,
+                        region: filters.region
+                    }
+                ]}
+
+            />
+
         )}
 
     </div>

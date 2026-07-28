@@ -13,6 +13,8 @@ import DataTable from "@/components/shared/DataTable";
 import { Input } from "@/components/ui/input";
 import { useFilters } from "@/contexts/FilterContext";
 import { useHeader } from "@/components/layout/HeaderContext";
+import RulePanel from "@/components/rules/rulesPanel";
+
 
 export default function(){
     const navigate = useNavigate();
@@ -83,7 +85,7 @@ export default function(){
     const tabs = [
     { id: "monitoring", label: "Monitoring" },
     { id: "nodes", label: "Nodes" },
-    { id: "warnings", label: "Warnings" },
+    { id: "rules", label: "Rules" },
     ];
     const [activeTab, setActiveTab] = useState("monitoring");
 
@@ -149,6 +151,7 @@ export default function(){
     const filteredNodes =
     eksNodeGroupById?.nodes.filter((node) => {
         const text = [
+        node.id,
         node.name,
         node.status,
         node.type,
@@ -166,7 +169,7 @@ export default function(){
     if (loading || !eksNodeGroupById){
         return <div>Loading...</div>;
     }
-
+    console.log(eksNodeGroupById.accountId)
     return(
         <div className="space-y-6">
             <button
@@ -242,18 +245,36 @@ export default function(){
                     <DataTable
                         data={filteredNodes}
                         columns={nodeColumns}
-                        getRowKey={(node) => node.name}
+                        getRowKey={(node) => node.id}
                         onRowClick={(node) =>
                             navigate(`/eks/${EksClusterId}/nodeGroup/${eksNodeGroupById.name}/node/${node.id}`)
                         }
                     />    
                 </>
             )}
+            
+            {activeTab === "rules" && eksNodeGroupById && (
 
-            {activeTab === "warnings" && (
-                <div className="rounded-lg border p-8 text-center text-muted-foreground">
-                    Coming Soon
-                </div>
+                <RulePanel
+
+                    service="eks"
+
+                    resourceType="nodegroup"
+
+                    resourceId={eksNodeGroupById.name}
+
+                    resources={[
+                        {
+                            id: eksNodeGroupById.name!,
+                            name: eksNodeGroupById.name,
+                            account: eksNodeGroupById.accountId,
+                            accountName: eksNodeGroupById.accountName,
+                            region: filters.region
+                        }
+                    ]}
+
+                />
+
             )}
 
         </div>

@@ -10,10 +10,11 @@ import MetricsCard from "@/components/shared/CurrentMetricCard";
 import InfoCard from "@/components/shared/InfoCard";
 import { useFilters } from "@/contexts/FilterContext";
 import { useHeader } from "@/components/layout/HeaderContext";
+import RulePanel from "@/components/rules/rulesPanel";
 
 export default function Ec2Detail() {
     const navigate = useNavigate();
-    const { filters } = useFilters();
+    const {filters,setEffectiveAccount} = useFilters();
     const { instanceId } = useParams();
 
     const { setFiltersEnabled } = useHeader();
@@ -25,30 +26,39 @@ export default function Ec2Detail() {
 
       return () => {
         setFiltersEnabled(true);
+
+        setEffectiveAccount("all");
       };
     }, []);
     
-    useEffect(() => {
+  useEffect(() => {
       async function loadInstanceById() {
-        try {
-        if (instanceId) {
-          const data = await getEc2InstanceById(instanceId, filters);
-          setInstance(data);
-        }
-        } catch (error) {
-        console.error(error);
-        } finally {
-        setLoading(false);
-        }
-      }
+          try {
 
+              if (!instanceId) return;
+              const data = await getEc2InstanceById(
+                  instanceId,
+                  filters
+              );
+
+              setInstance(data);
+              setEffectiveAccount(data.accountId);
+
+          } catch (error) {
+              console.error(error);
+          } finally {
+
+              setLoading(false);
+          }
+      }
       loadInstanceById();
-    }, [instanceId])
+
+  }, [instanceId]);
 
     /* Componente de pestañas dinámico */
     const tabs = [
     { id: "monitoring", label: "Monitoring" },
-    { id: "warnings", label: "Warnings" },
+    { id: "rules", label: "Rules" },
     ];
     const [activeTab, setActiveTab] = useState("monitoring");
 
@@ -176,6 +186,29 @@ export default function Ec2Detail() {
             />
           </div>
         </>
+      )}
+      {activeTab === "rules" && instanceById && (
+
+          <RulePanel
+
+              service="ec2"
+
+              resourceType="instance"
+              
+              resourceId={instanceById.id}
+
+              resources={[
+                  {
+                      id: instanceById.id,
+                      name: instanceById.name,
+                      account: instanceById.accountId,
+                      accountName: instanceById.account,
+                      region: filters.region
+                  }
+              ]}
+
+          />
+
       )}
 
     </div>

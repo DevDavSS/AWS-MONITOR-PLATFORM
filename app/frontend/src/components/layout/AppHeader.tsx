@@ -1,5 +1,6 @@
 import { useHeader } from "./HeaderContext";
 import { useFilters } from "@/contexts/FilterContext";
+import { CacheStatus } from "@/components/shared/CacheStatus";
 import { useState, useEffect } from "react";
 import { getOrganizations, getAccounts } from "@/services/organizationService";
 import {
@@ -86,7 +87,7 @@ export default function AppHeader() {
 
   return (
     <header className="border-b px-6 py-4">
-      <div className="flex items-start gap-4">
+    <div className="flex items-start justify-between gap-4">
 
 
 
@@ -192,6 +193,11 @@ export default function AppHeader() {
             {extraFilters}
           </div>
 
+        </div>
+
+        {/* Estado del cache */}
+        <div className="pt-2 flex justify-end">
+            <CacheStatus />
         </div>
 
       </div>

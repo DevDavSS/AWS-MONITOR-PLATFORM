@@ -6,6 +6,11 @@ import type { RdsDatabase } from "@/types/rds";
 import { getRdsDatabases } from "@/services/rdsService";
 import { useEffect, useState } from "react";
 import { useFilters } from "@/contexts/FilterContext";
+import Tabs from "@/components/shared/Tabs";
+import AlertPanel from "@/components/alerts/AlertPanel";
+import RulePanel from "@/components/rules/rulesPanel";
+import type { RuleSelectableResource } from "@/types/RuleSelectableResource";
+
 
 export default function RDS(){
 
@@ -13,6 +18,13 @@ export default function RDS(){
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const {filters} = useFilters();
+
+    const tabs = [
+    { id: "databases", label: "Databases" },
+    { id: "alerts", label: "Alerts" },
+    { id: "rules", label: "Rules" },
+    ];
+    const [activeTab, setActiveTab] = useState("databases");
 
     useEffect(() => {
     async function loadInstances() {
@@ -30,10 +42,25 @@ export default function RDS(){
     loadInstances();
     }, [filters]);
 
-    // const tabs = [
-    // { id: "monitoring", label: "Monitoring" },
-    // { id: "warnings", label: "Warnings" },
-    // ];
+
+    // Atributos  a  mostrar en tabal de oonstancias para el creador de reglas
+    const selectableResources: RuleSelectableResource[] =
+
+        databases.map(database => ({
+
+            id: database.id,
+
+            name: database.dbIdentifier,
+
+            accountName: database.account,
+
+            account: database.accountId,
+
+            region: database.region
+
+        }));
+
+
     const filteredDatabases = databases.filter((database) =>
     [
       database.id,
@@ -74,13 +101,48 @@ export default function RDS(){
             <ResourceCard title="Stopped" value={stopped} />
             <ResourceCard title="Total" value={total} />
             </div>
-            <Input
-            placeholder="Search instance..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="max-w-md"
+
+            {/* Selector de pestañas, y rednerizado segun pestaña seleccionada */}
+            <Tabs
+                tabs={tabs}
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
             />
-            <RdsTable DBIdentifiers={filteredDatabases}/>
+
+            {activeTab === "databases" &&(
+                <>
+                <Input
+                placeholder="Search instance..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="max-w-md"
+                />
+                <RdsTable DBIdentifiers={filteredDatabases}/>
+                </>
+            )}
+            {activeTab ===  "alerts" &&(
+                <>
+                <AlertPanel
+                    service="rds"
+                />
+                </>
+            )}
+            {activeTab === "rules"&& (
+
+                <>
+            <RulePanel
+
+                service="rds"
+
+                resourceType="database"
+
+                resources={selectableResources}
+
+            />
+                </>
+
+            )}
+
         </div>
     );
 }

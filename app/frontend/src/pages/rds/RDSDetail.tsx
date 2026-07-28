@@ -9,6 +9,7 @@ import DBInstanceMetricsCard from "@/components/rds/DBInstanceMetricsCard";
 import Tabs from "@/components/shared/Tabs";
 import { useFilters } from "@/contexts/FilterContext";
 import { useHeader } from "@/components/layout/HeaderContext";
+import RulePanel from "@/components/rules/rulesPanel";
 
 export default function RdsDetail() {
     const navigate = useNavigate();
@@ -18,37 +19,42 @@ export default function RdsDetail() {
     const [ DBinstanceById, setDBInstance] = useState<RdsDatabase | null>(null);
     const [loading, setLoading] = useState(true);
     const { setFiltersEnabled } = useHeader();
-    const {filters} = useFilters();
+    const {filters,setEffectiveAccount} = useFilters();
     
     /* Desabilitar filtros de encabezado */
     useEffect(() => {
-      setFiltersEnabled(false);
+        setFiltersEnabled(false);
 
-      return () => {
-        setFiltersEnabled(true);
-      };
+        return () => {
+            setFiltersEnabled(true);
+            setEffectiveAccount("all");
+        };
     }, []);
 
     useEffect(() => {
       async function loadInstanceById() {
         try {
-        if (DBinstanceId) {
-          const data = await getRdsDatabasesById(DBinstanceId, filters);
-          setDBInstance(data);
-        }
+          if (DBinstanceId) {
+            const data = await getRdsDatabasesById(DBinstanceId, filters);
+
+            setDBInstance(data);
+
+            // ← aquí
+            setEffectiveAccount(data.accountId);
+          }
         } catch (error) {
-        console.error(error);
+          console.error(error);
         } finally {
-        setLoading(false);
+          setLoading(false);
         }
       }
 
       loadInstanceById();
-    }, [DBinstanceId, filters])
-
+    }, [DBinstanceId]);
+  
     const tabs = [
     { id: "monitoring", label: "Monitoring" },
-    { id: "warnings", label: "Warnings" },
+    { id: "rules", label: "Rules" },
     ];
     const [activeTab, setActiveTab] = useState("monitoring");
     
@@ -171,11 +177,29 @@ export default function RdsDetail() {
       </div> 
       </>
     )}
-    {activeTab === "warnings" && (
-        <div className="rounded-lg border p-8 text-center text-muted-foreground">
-            Coming Soon
-        </div>
-    )}
+      {activeTab === "rules" && DBinstanceById && (
+
+          <RulePanel
+
+              service="rds"
+
+              resourceType="database"
+
+              resourceId={DBinstanceById.id}
+
+              resources={[
+                  {
+                      id: DBinstanceById.id,
+                      name: DBinstanceById.dbIdentifier,
+                      account: DBinstanceById.accountId,
+                      accountName: DBinstanceById.account,
+                      region: filters.region
+                  }
+              ]}
+
+          />
+
+      )}
 
 
     </div>

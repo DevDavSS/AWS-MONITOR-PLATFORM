@@ -2,15 +2,15 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import MainLayout from "@/layouts/MainLayout";
 
-import Dashboard from "@/pages/Dashboard";
-import EC2 from "@/pages/EC2";
-import EKS from "@/pages/EKS";
-import RDS from "@/pages/RDS";
-import Ec2Detail from "@/pages/Ec2Detail";
-import RdsDetail from "@/pages/RDSDetail";
-import EksDetail from "@/pages/EksDetail";
-import EksNodeGroup from "./pages/EksNodeGroup";
-import EKSNode from "./pages/EksNodeDetail";
+import Dashboard from "@/pages/dashboard/Dashboard";
+import EC2 from "@/pages/ec2/EC2";
+import EKS from "@/pages/eks/EKS";
+import RDS from "@/pages/rds/RDS";
+import Ec2Detail from "@/pages/ec2/Ec2Detail";
+import RdsDetail from "@/pages/rds/RDSDetail";
+import EksDetail from "@/pages/eks/EksDetail";
+import EksNodeGroup from "./pages/eks/EksNodeGroup";
+import EKSNode from "./pages/eks/EksNodeDetail";
 import Meraki from "./pages/Meraki";
 
 import { HeaderProvider } from "./components/layout/HeaderContext";
