@@ -1,3 +1,5 @@
+import { AlertOperator, AlertService, ResourceType } from "./ResurceSnapshot";
+
 export interface AlertRule {
 
     id: string;
@@ -17,6 +19,8 @@ export interface AlertRule {
     operator: AlertOperator;
 
     threshold: number;
+
+    createdAt: string;
 
     enabled: boolean;
 

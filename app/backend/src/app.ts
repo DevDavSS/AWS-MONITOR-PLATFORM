@@ -5,6 +5,7 @@ import ec2Routes from "./routes/ec2Routes";
 import rdsRoutes from "./routes/rdsRoutes"
 import eksRoutes from "./routes/eksRoutes"
 import resourceSnapshotRoutes from "./routes/resourceSnapshotRoutes";
+import cacheMetadata  from "./routes/cacheMetadata";
 
 import { startResourceScheduler } from "./scheduler/resourceScheduler";
 
@@ -55,6 +56,12 @@ app.get("/", (_, res) => {
 app.use(
     "/api/resources/snapshots",
     resourceSnapshotRoutes
+);
+
+/* Rutas para metatdatos del cache */
+app.use(
+    "/api/cache/status",
+    cacheMetadata
 );
 
 

@@ -294,9 +294,9 @@ Esta estructura **no se almacena en la base de datos**, únicamente existe en me
 ```ts
 interface RuntimeRule {
 
-    ruleId: string;         // Regla monitoreada
+    rule: AlertRule;         // Regla monitoreada
 
-    triggered: boolean;     // Indica si la alerta ya fue disparada
+    snapshot: ResourceSnapshot;     // Recurso relacionado
 
 }
 ```
@@ -452,7 +452,87 @@ Este es el servicio que se dedica a construir el snapshot de los recursos utiliz
 
 ---
 
+# Microservicio de Alertas
+## Estructura del proyecto: 
+``` text
+alert-service/
+│
+├── package.json
+├── tsconfig.json
+├── .env
+│
+└── src/
+    ├── app.ts
+    │
+    ├── clients/
+    │   └── backendClient.ts
+    │
+    ├── config/
+    │   ├── database.ts
+    │   └── env.ts
+    │
+    ├── controllers/
+    │   └── alertController.ts
+    │
+    ├── engine/
+    │   ├── alertEvaluator.ts
+    │   └── runtimeRuleResolver.ts
+    │
+    ├── notifications/
+    │   ├── notificationService.ts
+    │   └── whatsappService.ts
+    │
+    ├── repositories/
+    │   └── alertRepository.ts
+    │
+    ├── routes/
+    │   └── alertRoutes.ts
+    │
+    ├── schedulers/
+    │   └── alertScheduler.ts
+    │
+    ├── services/
+    │   ├── alertService.ts
+    │   ├── ruleService.ts
+    │   └── resourceSnapshotService.ts
+    │
+    │── types/
+    │    ├── Alert.ts
+    │    ├── AlertRule.ts
+    │    ├── Notification.ts
+    │    ├── ResourceSnapshot.ts
+    │    └── RuntimeRule.ts
+    ├── mappers/
+```
+**Capas del proyecto**
+
+**1. Infraestructura**
+- backendClient
+- database
+- whatsappService
+- repository
+
+
+**2. Dominio**
+Lógica de negocio. 
+- runtimeRuleResolver
+- alertEvaluator
+
+**3. Aplicación**
+Orquestación del flujo. 
+- alertService
+- scheduler
+- controllers
+
+---
 # 6. Runtime Rule Resolver
+
+*Ubicado en src/engine/runtimeRuleResolver.ts*
+**Objetivo de runtime rule resolver**
+
+Runtime Rule Resolver unicamente se encarga de definir que reglas aplican excatamente para cada reecurso recibido por el snapshot con el proposito de construir una interfaz en la que se relacionen la Regla y especificamente el recurso (basados en sus typpes ResourceSanpshot, AlertRule y RuntimeRuleResolver) que posteriormente sera usada por el engine para realizar las comparaciones entre los los umbrales de la rule y lo valores reales de los recursos para definir si existe una alerta o no.
+
+**Interfaces definidas en la seccion 4:Dominio**
 
 ---
 

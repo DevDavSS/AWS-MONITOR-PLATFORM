@@ -1,10 +1,3 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../ui/card";
-
 interface ResourceCardProps {
   title: string;
   value: number;
@@ -15,16 +8,13 @@ export default function ResourceCard({
   value,
 }: ResourceCardProps) {
   return (
-    <Card className="h-48">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-
-      <CardContent className="flex items-center justify-center h-full">
-        <span className="text-5xl font-bold">
-          {value}
-        </span>
-      </CardContent>
-    </Card>
+    <div className="rounded-xl border border-gray-200 bg-white p-6">
+      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+        {title}
+      </p>
+      <p className="mt-3 font-mono text-4xl font-semibold text-gray-900 tabular-nums">
+        {value}
+      </p>
+    </div>
   );
 }

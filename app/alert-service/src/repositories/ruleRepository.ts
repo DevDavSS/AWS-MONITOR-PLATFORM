@@ -12,33 +12,68 @@ export const getRules = async (
     const values: any[] = [];
 
     if (filters.service !== undefined) {
-        values.push(filters.service);
-        conditions.push(`service = $${values.length}`);
-    }
 
+        values.push(filters.service);
+
+        conditions.push(
+            `ar.service = $${values.length}`
+        );
+
+    }
     if (filters.resourceId !== undefined) {
+
         values.push(filters.resourceId);
-        conditions.push(`resource_id = $${values.length}`);
+
+        conditions.push(
+            `
+            EXISTS (
+                SELECT 1
+                FROM rule_resources rr
+                WHERE rr.rule_id = ar.id
+                AND rr.resource_id = $${values.length}
+            )
+            `
+        );
     }
 
     if (filters.organizationId !== undefined) {
+
         values.push(filters.organizationId);
-        conditions.push(`organization_id = $${values.length}`);
+
+        conditions.push(
+            `ar.organization_id = $${values.length}`
+        );
+
     }
 
     if (filters.accountId !== undefined) {
+
         values.push(filters.accountId);
-        conditions.push(`account_id = $${values.length}`);
+
+        conditions.push(
+            `ar.account_id = $${values.length}`
+        );
+
     }
 
     if (filters.region !== undefined) {
+
         values.push(filters.region);
-        conditions.push(`region = $${values.length}`);
+
+        conditions.push(
+            `ar.region = $${values.length}`
+        );
+
     }
 
     if (filters.enabled !== undefined) {
+
         values.push(filters.enabled);
-        conditions.push(`enabled = $${values.length}`);
+
+        conditions.push(
+            `ar.enabled = $${values.length}`
+        );
+
     }
 
     const where =
@@ -48,107 +83,185 @@ export const getRules = async (
 
     const result = await db.query(
         `
-        SELECT *
-        FROM alert_rules
+        SELECT
+
+            ar.*,
+
+            ARRAY_AGG(rr.resource_id)
+            FILTER (
+                WHERE rr.resource_id IS NOT NULL
+            ) AS resource_ids
+
+        FROM alert_rules ar
+
+        LEFT JOIN rule_resources rr
+
+        ON rr.rule_id = ar.id
+
         ${where}
+
+        GROUP BY ar.id
+
         `,
         values
     );
 
+
+
     return result.rows.map(row => ({
+
 
         id: row.id,
 
-        organizationId: row.organization_id,
+        organizationId:
+            row.organization_id,
 
-        accountId: row.account_id,
+        accountId:
+            row.account_id,
 
-        region: row.region,
+        region:
+            row.region,
 
-        service: row.service,
+        service:
+            row.service,
 
-        resourceType: row.resource_type,
+        resourceType:
+            row.resource_type,
 
-        resourceId: row.resource_id,
+        resourceIds:
+            row.resource_ids ?? [],
 
-        metric: row.metric,
+        metric:
+            row.metric,
 
-        operator: row.operator,
+        operator:
+            row.operator,
 
-        threshold: row.threshold,
+        threshold:
+            row.threshold,
 
-        enabled: row.enabled,
+        enabled:
+            row.enabled,
 
-        createdAt: row.created_at
-
+        createdAt:
+            row.created_at
     }));
 
 };
 
 
-export const createRule = async (
-    rule: AlertRule
+export const createRuleWithResources = async (
+    rule: AlertRule,
+    resourceIds: string[]
 ): Promise<void> => {
+    const client = await db.connect();
 
-    await db.query(
-        `
-        INSERT INTO alert_rules (
+    try {
+        await client.query("BEGIN");
+        // 1. Crear regla principal
 
-            id,
+        await client.query(
+            `
+            INSERT INTO alert_rules (
 
-            organization_id,
+                id,
+                organization_id,
+                account_id,
+                region,
+                service,
+                resource_type,
+                metric,
+                operator,
+                threshold,
+                enabled
 
-            account_id,
+            )
+            VALUES (
 
-            region,
+                $1,$2,$3,$4,$5,$6,$7,$8,$9,$10
 
-            service,
+            )
+            `,
+            [
 
-            resource_type,
+                rule.id,
 
-            resource_id,
+                rule.organizationId,
 
-            metric,
+                rule.accountId,
 
-            operator,
+                rule.region,
 
-            threshold,
+                rule.service,
 
-            enabled
+                rule.resourceType,
 
-        )
-        VALUES (
+                rule.metric,
 
-            $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11
+                rule.operator,
 
-        )
-        `,
-        [
+                rule.threshold,
 
-            rule.id,
+                rule.enabled
 
-            rule.organizationId,
+            ]
+        );
 
-            rule.accountId,
+        // 2. Insertar recursos relacionados
+        if(resourceIds.length > 0){
 
-            rule.region,
 
-            rule.service,
+            const values:string[] = [];
+            const params:any[] = [];
 
-            rule.resourceType,
+            resourceIds.forEach((resourceId,index)=>{
 
-            rule.resourceId,
+                const position = index * 2;
+                values.push(
+                    `($${position + 1},$${position + 2})`
+                );
 
-            rule.metric,
 
-            rule.operator,
+                params.push(
+                    rule.id,
+                    resourceId
+                );
 
-            rule.threshold,
+            });
 
-            rule.enabled
+            await client.query(
+                `
+                INSERT INTO rule_resources (
 
-        ]
-    );
+                    rule_id,
+                    resource_id
+
+                )
+                VALUES
+
+                ${values.join(",")}
+
+                `,
+                params
+            );
+
+        }
+
+        await client.query("COMMIT");
+
+    } catch(error){
+
+
+        await client.query("ROLLBACK");
+
+        throw error;
+
+
+    } finally {
+
+        client.release();
+
+    }
 
 };
 

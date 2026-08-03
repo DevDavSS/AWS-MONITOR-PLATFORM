@@ -1,20 +1,24 @@
 import { AlertRule } from "../types/AlertRule";
-import { getRules, createRule, updateRule } from "../repositories/ruleRepository";
+import { getRules, createRuleWithResources, updateRule } from "../repositories/ruleRepository";
 import { AlertRuleFilters } from "../types/filters/RuleFilters";
 
 // Get Rules, optional filters
 export const getAlertRules = async (
     filters: AlertRuleFilters = {}
 ): Promise<AlertRule[]> => {
-    return await getRules(filters)
-} 
+    return await getRules(filters);
 
-// Create new Rule (upgrade: deduplicated rules validation)
+};
+
 export const createAlertRule = async (
-    rule:AlertRule
+    rule: AlertRule,
+    resourceIds: string[]
 ) => {
-    
-    await createRule(rule);
+
+    await createRuleWithResources(
+        rule,
+        resourceIds
+    );
 
 };
 

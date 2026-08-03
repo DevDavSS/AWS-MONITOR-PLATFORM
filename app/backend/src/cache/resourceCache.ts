@@ -1,4 +1,14 @@
-const CACHE_TTL = 5 * 60 * 1000; // 2 minutos
+interface CacheMetadata {
+    lastUpdated: number | null;
+    nextUpdate: number | null;
+}
+
+const cacheMetadata: CacheMetadata = {
+    lastUpdated: null,
+    nextUpdate: null
+};
+
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutos para que se reestablezca el cache (No actualiza)
 
 interface CacheEntry<T> {
     data: T;
@@ -58,3 +68,20 @@ export const clearCache = () => {
 export const getAllCache = () => {
     return resourceCache;
 }
+
+
+export const updateCacheMetadata = () => {
+
+    cacheMetadata.lastUpdated = Date.now();
+
+    cacheMetadata.nextUpdate =
+        Date.now() + (2 * 60 * 1000);
+
+};
+
+
+export const getCacheMetadata = () => {
+
+    return cacheMetadata;
+
+};

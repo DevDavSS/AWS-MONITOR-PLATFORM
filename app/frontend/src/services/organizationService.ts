@@ -1,6 +1,8 @@
+const API_URL = import.meta.env.VITE_BACKEND_API;
+
 export async function getOrganizations(){
     const response = await fetch(
-        "http://localhost:3000/api/organizations"
+        `${API_URL}/organizations`
     );
 
   if (!response.ok) {
@@ -18,7 +20,7 @@ export async function getAccounts(
     organizationId: string
 ){
     const response = await fetch(
-        `http://localhost:3000/api/organizations/${organizationId}/accounts`
+        `${API_URL}/organizations/${organizationId}/accounts`
     );
 
   if (!response.ok) {

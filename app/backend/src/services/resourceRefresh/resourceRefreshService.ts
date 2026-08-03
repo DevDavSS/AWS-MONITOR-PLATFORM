@@ -14,7 +14,7 @@ export const refreshEc2Resources = async () => {
         for (const region of regions) {
 
             await refreshEc2OrganizationCache(
-                organization.id,
+                organization.id!,
                 region,
             );
 
@@ -31,7 +31,7 @@ export const refreshRdsResources = async () => {
         for (const region of regions) {
 
             await refreshRdsOrganizationCache(
-                organization.id,
+                organization.id!,
                 region,
             );
 
@@ -48,7 +48,7 @@ export const refreshEksResources = async () => {
         for (const region of regions) {
 
             await refreshEksOrganizationCache(
-                organization.id,
+                organization.id!,
                 region,
             );
 

@@ -1,4 +1,3 @@
-import { regions } from "../../config/regions";
 
 
 export interface ResourceSnapshot {
@@ -19,3 +18,25 @@ export interface ResourceSnapshot {
 
     metricas: Record<string, number>; 
 }
+
+export type AlertService =
+    | "ec2"
+    | "eks"
+    | "rds"
+    | "meraki";
+
+export type ResourceType =
+    | "instance"
+    | "database"
+    | "cluster"
+    | "nodegroup"
+    | "node"
+    | "device";
+
+export type AlertOperator =
+    | ">"
+    | ">="
+    | "<"
+    | "<="
+    | "="
+    | "!=";

@@ -1,5 +1,4 @@
-
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import MetricsCard from "@/components/shared/CurrentMetricCard";
 import MetricChart from "@/components/shared/MetricChart";
@@ -7,6 +6,7 @@ import { useEffect, useState } from "react";
 import type { EC2Instance } from "@/types/ec2";
 import Tabs from "@/components/shared/Tabs";
 import InfoCard from "@/components/shared/InfoCard";
+import { StatusBadge, BoolBadge } from "@/components/shared/StatusBadge";
 import { getEksNodeById } from "@/services/eksService";
 import { useFilters } from "@/contexts/FilterContext";
 import { useHeader } from "@/components/layout/HeaderContext";
@@ -81,7 +81,9 @@ export default function EKSNode() {
     const nodeFields = [
         {
             label: "Node Id",
-            render: (node: EC2Instance) => node.id,
+            render: (node: EC2Instance) => (
+                <span className="font-mono text-sm">{node.id}</span>
+            ),
         },
         {
             label: "Name",
@@ -89,15 +91,17 @@ export default function EKSNode() {
         },
         {
             label: "Type",
-            render: (node: EC2Instance) => node.type,
+            render: (node: EC2Instance) => (
+                <span className="font-mono text-sm">{node.type}</span>
+            ),
         },
         {
             label: "Status",
-            render: (node: EC2Instance) => node.status,
+            render: (node: EC2Instance) => <StatusBadge status={node.status} />,
         },
         {
-            label: "ClaudWatch Agent",
-            render: (node: EC2Instance) => node.cloudWatchAgent ? "true" : "false",
+            label: "CloudWatch Agent",
+            render: (node: EC2Instance) => <BoolBadge value={node.cloudWatchAgent} />,
         },
     ]
 
@@ -109,22 +113,30 @@ export default function EKSNode() {
 
 
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+          <div className="flex items-center justify-center py-24 text-sm text-gray-400">
+            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+            Cargando nodo…
+          </div>
+        );
     }
   return (
     <div className="space-y-6">
       
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center gap-2 text-sm hover:underline"
+        className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-200 rounded-lg px-3 py-1.5 hover:bg-gray-50 transition-colors"
       >
-        <ArrowLeft size={18} />
+        <ArrowLeft className="w-4 h-4" />
         Node Group ({EksNodeGroupId}) 
       </button>
 
-      <h1 className="text-3xl font-bold">
-        {instanceById?.name} ({instanceById?.id}) (Node)
-      </h1>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+          {instanceById?.name} <span className="text-gray-400 font-normal">(Node)</span>
+        </h1>
+        <p className="text-sm text-gray-400 font-mono mt-1">{instanceById?.id}</p>
+      </div>
 
       {instanceById && (
         <InfoCard

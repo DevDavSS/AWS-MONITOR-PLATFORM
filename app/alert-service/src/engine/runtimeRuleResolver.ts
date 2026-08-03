@@ -2,64 +2,51 @@ import { AlertRule } from "../types/AlertRule";
 import { ResourceSnapshot } from "../types/ResourceSnapshot";
 import { RuntimeRule } from "../types/RuntimeRule";
 
+
 export const resolveRuntimeRules = (
     snapshots: ResourceSnapshot[],
     rules: AlertRule[]
 ): RuntimeRule[] => {
 
     const runtimeRules: RuntimeRule[] = [];
-    for (const snapshot of snapshots) {
-    
-        const applicableRules = rules.filter(rule => {
 
-            return (
+for (const snapshot of snapshots) {
 
-                rule.service === snapshot.service &&
+    const applicableRules = rules.filter(rule => {
 
-                rule.resourceType === snapshot.resourceType &&
+        return (
 
-                (
-                    rule.organizationId === null ||
+            rule.service === snapshot.service
+            &&
+            rule.resourceType === snapshot.resourceType
+            &&
+            rule.organizationId === snapshot.organizationId
+            &&
+            rule.accountId === snapshot.accountId
+            &&
+            rule.region === snapshot.region
+            &&
+            rule.resourceIds.includes(
+                snapshot.resourceId
+            )
 
-                    rule.organizationId === snapshot.organizationId
-                ) &&
+        );
 
-                (
-                    rule.accountId === null ||
+    });
 
-                    rule.accountId === snapshot.accountId
-                ) &&
+    for (const rule of applicableRules) {
 
-                (
-                    rule.region === null ||
+        runtimeRules.push({
 
-                    rule.region === snapshot.region
-                ) &&
+            rule,
 
-                (
-                    rule.resourceId === null ||
-
-                    rule.resourceId === snapshot.resourceId
-                )
-
-            );
+            snapshot
 
         });
-
-        for (const rule of applicableRules) {
-
-            runtimeRules.push({
-
-                rule,
-
-                snapshot
-
-            });
-
-        }
-
     }
 
+}
+    
     return runtimeRules;
 
 };

@@ -14,7 +14,7 @@ export interface AlertRule {
 
     resourceType: ResourceType; //auto (frontend managed)
 
-    resourceId: string;   //auto (frontend managed)
+    resourceIds:string[];
 
     metric: string;  //manual
 

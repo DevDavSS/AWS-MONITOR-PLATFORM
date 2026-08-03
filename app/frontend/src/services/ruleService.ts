@@ -3,6 +3,8 @@ import type { CreateRulePayload } from "@/types/Alert";
 import type { UpdateRuleRequest } from "@/types/UpdateRule";
 
 
+const ALERT_API_URL = import.meta.env.VITE_ALERT_SERVICE_API;
+
 export const getRules = async (
 
     filters: RuleFilters
@@ -35,7 +37,7 @@ export const getRules = async (
 
     const response = await fetch(
 
-        `http://localhost:3001/api/rules?${params.toString()}`
+        `${ALERT_API_URL}/rules?${params.toString()}`
 
     );
 
@@ -52,7 +54,7 @@ export const createRule = async (
 
     const response = await fetch(
 
-        "http://localhost:3001/api/rules",
+        `${ALERT_API_URL}/rules`,
 
         {
 
@@ -89,7 +91,7 @@ export const updateRule = async (
 
     const response = await fetch(
 
-        `http://localhost:3001/api/rules/${ruleId}`,
+        `${ALERT_API_URL}/rules/${ruleId}`,
 
         {
 

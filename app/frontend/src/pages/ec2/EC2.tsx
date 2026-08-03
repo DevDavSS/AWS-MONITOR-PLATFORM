@@ -4,12 +4,14 @@ import { useEffect, useState } from "react";
 import { getEc2Instances } from "@/services/ec2Service";
 import type { EC2Instance } from "@/types/ec2";
 import DataTable from "@/components/shared/DataTable";
+import { StatusBadge, BoolBadge } from "@/components/shared/StatusBadge";
 import { useNavigate } from "react-router-dom";
 import { useFilters } from "@/contexts/FilterContext";
 import Tabs from "@/components/shared/Tabs";
 import AlertPanel from "@/components/alerts/AlertPanel";
 import RulePanel from "@/components/rules/rulesPanel";
 import type { RuleSelectableResource } from "@/types/RuleSelectableResource";
+import { Search, RefreshCw } from "lucide-react";
 
 export default function EC2() {
   const [instances, setInstances] = useState<EC2Instance[]>([]);
@@ -80,12 +82,16 @@ export default function EC2() {
         {
             key: "name",
             header: "Name",
-            render: (instance: EC2Instance) => instance.name ?? "-",
+            render: (instance: EC2Instance) => (
+                <span className="font-medium text-gray-900">{instance.name ?? "-"}</span>
+            ),
         },
         {
             key: "id",
             header: "Instance ID",
-            render: (instance: EC2Instance) => instance.id ?? "-",
+            render: (instance: EC2Instance) => (
+                <span className="font-mono text-xs text-gray-500">{instance.id ?? "-"}</span>
+            ),
         },
         {
             key: "account",
@@ -95,29 +101,34 @@ export default function EC2() {
         {
             key: "type",
             header: "Type",
-            render: (instance: EC2Instance) => instance.type ?? "-",
+            render: (instance: EC2Instance) => (
+                <span className="font-mono text-xs">{instance.type ?? "-"}</span>
+            ),
         },
         {
             key: "status",
             header: "Status",
-            render: (instance: EC2Instance) => instance.status ?? "-",
+            render: (instance: EC2Instance) =>
+                instance.status ? <StatusBadge status={instance.status} /> : "-",
         },
         {
             key: "agentcw",
             header: "Agent CW",
-            render: (instance: EC2Instance) => instance.cloudWatchAgent ? "true" : "false",
+            render: (instance: EC2Instance) => <BoolBadge value={instance.cloudWatchAgent} />,
 
         },
         {
             key: "cpu",
             header: "CPU",
-            render: (instance: EC2Instance) => instance.currentMetrics.cpu ?? "-",
+            render: (instance: EC2Instance) =>
+                instance.currentMetrics.cpu != null ? `${instance.currentMetrics.cpu}%` : "-",
 
         },
         {
             key: "memory",
             header: "Memory",
-            render: (instance: EC2Instance) => instance.currentMetrics.memory ?? "-",
+            render: (instance: EC2Instance) =>
+                instance.currentMetrics.memory != null ? `${instance.currentMetrics.memory}%` : "-",
 
         },
       ]
@@ -133,14 +144,24 @@ export default function EC2() {
   const total = instances.length;
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center py-24 text-sm text-gray-400">
+        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+        Cargando instancias…
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">EC2 Instances</h1>
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-900">EC2 Instances</h1>
+        <p className="text-sm text-gray-400 mt-1">
+          Instancias EC2 de la organización y cuentas seleccionadas
+        </p>
+      </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-3 gap-4">
         <ResourceCard title="Running" value={running} />
         <ResourceCard title="Stopped" value={stopped} />
         <ResourceCard title="Total" value={total} />
@@ -153,13 +174,16 @@ export default function EC2() {
           onTabChange={setActiveTab}
       />
       {activeTab ===  "instances" &&(
-        <>
-        <Input
-          placeholder="Search instance..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-md"
-        />
+        <div className="space-y-4">
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Input
+            placeholder="Buscar instancia..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9 rounded-lg border-gray-300"
+          />
+        </div>
 
         <DataTable
             data={filteredinstances}
@@ -168,8 +192,9 @@ export default function EC2() {
             onRowClick={(instance) =>
                 navigate(`/ec2/${instance.id}`)
             }
-        /> 
-        </>
+            emptyMessage="No se encontraron instancias con esos filtros"
+        />
+        </div>
       )}
       {activeTab ===  "alerts" &&(
         <>

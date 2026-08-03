@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom"
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, RefreshCw, Search } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getEksNodeGroupById } from "@/services/eksService";
 import type { NodeGroup } from "@/types/eks";
@@ -10,6 +10,7 @@ import MetricsCard from "@/components/shared/CurrentMetricCard";
 import MetricChart from "@/components/shared/MetricChart";
 import ResourceCard from "@/components/dashboard/ResourceCard";
 import DataTable from "@/components/shared/DataTable";
+import { StatusBadge, BoolBadge } from "@/components/shared/StatusBadge";
 import { Input } from "@/components/ui/input";
 import { useFilters } from "@/contexts/FilterContext";
 import { useHeader } from "@/components/layout/HeaderContext";
@@ -61,7 +62,7 @@ export default function(){
         },
         {
             label: "Status",
-            render: (nodeGroup: NodeGroup) => nodeGroup.status,
+            render: (nodeGroup: NodeGroup) => <StatusBadge status={nodeGroup.status} />,
         },
         {
             label: "Desired Size",
@@ -77,7 +78,9 @@ export default function(){
         },
         {
             label: "Instance Type",
-            render: (nodeGroup: NodeGroup) => nodeGroup.instanceType,
+            render: (nodeGroup: NodeGroup) => (
+                <span className="font-mono text-sm">{nodeGroup.instanceType}</span>
+            ),
         },
     ]
 
@@ -118,33 +121,39 @@ export default function(){
         {
             key: "name",
             header: "Name",
-            render: (node: EC2Instance) => node.name ?? "-",
+            render: (node: EC2Instance) => (
+                <span className="font-medium text-gray-900">{node.name ?? "-"}</span>
+            ),
         },
         {
             key: "status",
             header: "Status",
-            render: (node: EC2Instance) => node.status ?? "-",
+            render: (node: EC2Instance) =>
+                node.status ? <StatusBadge status={node.status} /> : "-",
         },
         {
             key: "cwAgent",
             header: "CW Agent",
-            render: (node: EC2Instance) => node.cloudWatchAgent ? "true" : "false"
+            render: (node: EC2Instance) => <BoolBadge value={node.cloudWatchAgent} />,
         },
         {
             key: "type",
             header: "Instance Type",
-            render: (node: EC2Instance) => node.type ?? "-",
+            render: (node: EC2Instance) => (
+                <span className="font-mono text-xs">{node.type ?? "-"}</span>
+            ),
         },
         {
             key: "cpu",
             header: "Cpu",
-            render: (node: EC2Instance) => node.currentMetrics.cpu ?? "-",
+            percentage: (node: EC2Instance) => node.currentMetrics.cpu,
+            render: (node: EC2Instance) => <span>{node.currentMetrics.cpu}%</span>,
         },
         {
             key: "memory",
             header: "Memory",
-            render: (node: EC2Instance) => node.currentMetrics.memory ?? "-",
-
+            percentage: (node: EC2Instance) => node.currentMetrics.memory,
+            render: (node: EC2Instance) => <span>{node.currentMetrics.memory}%</span>,
         },
     ]
     {/* Nodos filtrados para DataTable y Barra de búsqueda */}
@@ -167,20 +176,25 @@ export default function(){
 
     /* Pantalla de carga */
     if (loading || !eksNodeGroupById){
-        return <div>Loading...</div>;
+        return (
+          <div className="flex items-center justify-center py-24 text-sm text-gray-400">
+            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+            Cargando node group…
+          </div>
+        );
     }
     console.log(eksNodeGroupById.accountId)
     return(
         <div className="space-y-6">
             <button
                 onClick={() => navigate(-1)}
-                className="flex items-center gap-2 text-sm hover:underline"
+                className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-200 rounded-lg px-3 py-1.5 hover:bg-gray-50 transition-colors"
             >
-                <ArrowLeft size={18} />
+                <ArrowLeft className="w-4 h-4" />
                 EKS Cluster {EksClusterId}
             </button>
-            <h1 className="text-3xl font-bold">
-                {EksNodeGroupId} (NodeGroup) 
+            <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+                {EksNodeGroupId} <span className="text-gray-400 font-normal">(Node Group)</span>
             </h1>
             <InfoCard
                 title="EKS Node Groups - Node Group Information"
@@ -229,19 +243,22 @@ export default function(){
             )}
             
             {activeTab === "nodes" && (
-                <>
-                <div className="grid grid-cols-4 gap-6 space-y-6">
+                <div className="space-y-4">
+                <div className="grid grid-cols-4 gap-4">
                     <ResourceCard title="Desired" value={eksNodeGroupById?.desiredSize ?? 0} />
                     <ResourceCard title="Min Size" value={eksNodeGroupById?.minSize ?? 0} />
                     <ResourceCard title="Max Size" value={eksNodeGroupById?.maxSize ?? 0} />
                     <ResourceCard title="Total Nodes" value={eksNodeGroupById?.totalNodes ?? 0} />        
                 </div>
-                    <Input
-                        placeholder="Search Nodes..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="max-w-md"
-                    />
+                    <div className="relative max-w-md">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                        <Input
+                            placeholder="Buscar nodo..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="pl-9 rounded-lg border-gray-300"
+                        />
+                    </div>
                     <DataTable
                         data={filteredNodes}
                         columns={nodeColumns}
@@ -250,7 +267,7 @@ export default function(){
                             navigate(`/eks/${EksClusterId}/nodeGroup/${eksNodeGroupById.name}/node/${node.id}`)
                         }
                     />    
-                </>
+                </div>
             )}
             
             {activeTab === "rules" && eksNodeGroupById && (

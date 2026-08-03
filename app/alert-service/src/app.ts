@@ -2,8 +2,12 @@ import express from "express";
 import { startAlertScheduler } from "./schedulers/alertScheduler";
 import alertRoutes from "./routes/alertRoutes";
 import rulesRoutes from "./routes/ruleRoute";
+import cors from "cors"
 
 const app = express();
+
+// Middleware
+app.use(cors());
 
 // Parse JSON request bodies
 app.use(express.json());

@@ -14,26 +14,30 @@ export default function MetricsCard({
   metrics,
 }: MetricsCardProps) {
   return (
-    <div className="rounded-lg border p-6">
-      <h2 className="text-lg font-semibold mb-4">
+    <div className="rounded-xl border border-gray-200 bg-white p-6">
+      <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-5">
         {title}
       </h2>
 
       <div
-        className="grid gap-6"
+        className="grid divide-x divide-gray-100"
         style={{
           gridTemplateColumns: `repeat(${metrics.length}, minmax(0, 1fr))`,
         }}
       >
-        {metrics.map((metric) => (
-          <div key={metric.label}>
-            <p className="text-sm text-muted-foreground">
+        {metrics.map((metric, index) => (
+          <div key={metric.label} className={index > 0 ? "pl-6" : ""}>
+            <p className="text-xs text-gray-400 mb-1">
               {metric.label}
             </p>
 
-            <p className="text-2xl font-bold">
+            <p className="font-mono text-3xl font-semibold text-gray-900">
               {metric.value.toFixed(2)}
-              {metric.unit ? ` ${metric.unit}` : ""}
+              {metric.unit && (
+                <span className="text-base font-normal text-gray-400 ml-1">
+                  {metric.unit}
+                </span>
+              )}
             </p>
           </div>
         ))}

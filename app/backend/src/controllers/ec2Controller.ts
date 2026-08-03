@@ -11,14 +11,30 @@ export const getInstances = async (
 ) => {
 
   const organizationId = req.query.organization as string;
-  const region = req.query.region as string;
+  const region = req.query.region as string | undefined;
   const accountId = req.query.account as string | undefined;
 
+
+  if (!organizationId) {
+    return res.status(400).json({
+      message: "organization is required"
+    });
+  }
+
+
+  if (!region) {
+    return res.status(400).json({
+      message: "region is required"
+    });
+  }
+
+
   const instances = await getEc2InstancesFromOrganization(
-      organizationId,
-      region,
-      accountId
+    organizationId,
+    region,
+    accountId
   );
+
 
   res.json(instances);
 
@@ -29,10 +45,38 @@ export const getInstanceById = async (
   res: Response
 ) => {
 
-  const id = req.params.id.toString();
-  const organizationId = req.query.organization as string;
-  const region = req.query.region as string;
-  const accountId = req.query.account as string | undefined;
+  const id = req.params.id as string;
+
+  const organizationId = req.query.organization as string | undefined;
+  const region = req.query.region as string | undefined;
+
+  const accountId =
+    typeof req.query.account === "string" &&
+    req.query.account.trim() !== ""
+      ? req.query.account
+      : undefined;
+
+
+  if (!id) {
+    return res.status(400).json({
+      message: "instance id is required"
+    });
+  }
+
+
+  if (!organizationId) {
+    return res.status(400).json({
+      message: "organization is required"
+    });
+  }
+
+
+  if (!region) {
+    return res.status(400).json({
+      message: "region is required"
+    });
+  }
+
 
   const instance =
     await getEc2InstanceFromOrganizationById(
@@ -40,7 +84,8 @@ export const getInstanceById = async (
       region,
       id,
       accountId
-    )
+    );
+
 
   res.json(instance);
 

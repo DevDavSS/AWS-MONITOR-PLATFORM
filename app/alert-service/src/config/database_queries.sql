@@ -12,7 +12,6 @@ CREATE TABLE alert_rules (
 
     resource_type VARCHAR(50) NOT NULL,
 
-    resource_id VARCHAR(200) NOT NULL,
 
     metric VARCHAR(100) NOT NULL,
 
@@ -94,4 +93,20 @@ ON alerts (
     rule_id,
     resource_id,
     state
+);
+
+
+CREATE TABLE rule_resources (
+
+    rule_id UUID NOT NULL,
+
+    resource_id VARCHAR(200) NOT NULL,
+
+    PRIMARY KEY(rule_id, resource_id),
+
+    CONSTRAINT fk_rule_resources_rule
+        FOREIGN KEY (rule_id)
+        REFERENCES alert_rules(id)
+        ON DELETE CASCADE
+
 );

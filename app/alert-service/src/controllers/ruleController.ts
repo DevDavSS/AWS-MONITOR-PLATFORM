@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { randomUUID } from "crypto";
-
+import { getOrganizationAccounts } from "../services/organizationService";
 import { getAlertRules,createAlertRule, updateAlertRule } from "../services/ruleService";
 
 export const getRules = async (
@@ -31,15 +31,16 @@ export const getRules = async (
         }),
 
         ...(req.query.enabled !== undefined && {
-            enabled: typeof req.query.enabled === "string"
-                ? req.query.enabled.toLowerCase() === "true"
-                : Boolean(req.query.enabled)
+            enabled:
+                typeof req.query.enabled === "string"
+                    ? req.query.enabled.toLowerCase() === "true"
+                    : Boolean(req.query.enabled)
         })
 
     };
 
-
     const rules = await getAlertRules(filters);
+
 
     res.json(rules);
 
@@ -49,22 +50,55 @@ export const createRule = async (
     req: Request,
     res: Response
 ) => {
+
     console.log("BODY:", req.body);
-    const rule = {
-        id: randomUUID(),
+    const {
+        accountIds,
+        resourceIds,
+        ...ruleData
+    } = req.body;
 
-        enabled: true,
+    if (
+        !Array.isArray(accountIds) ||
+        accountIds.length === 0
+    ) {
+        return res.status(400).json({
+            message: "At least one accountId is required"
+        });
+    }
 
-        ...req.body,
+    const createdRules = [];
 
-        createdAt: new Date()
-    };
+    for (const accountId of accountIds) {
 
-    await createAlertRule(rule);
+        const rule = {
 
-    res.status(201).json(rule);
+            id: randomUUID(),
 
-}
+            enabled: true,
+
+            createdAt: new Date(),
+
+            ...ruleData,
+
+            accountId
+
+        };
+        await createAlertRule(
+            rule,
+            resourceIds
+        );
+
+
+        createdRules.push({
+            ...rule,
+            resourceIds
+        });
+
+    }
+
+    res.status(201).json(createdRules);
+};
 
 
 export const updateRule = async (

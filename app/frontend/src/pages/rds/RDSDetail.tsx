@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, RefreshCw } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import MetricChart from "@/components/shared/MetricChart";
 import { useEffect, useState } from "react";
@@ -59,21 +59,26 @@ export default function RdsDetail() {
     const [activeTab, setActiveTab] = useState("monitoring");
     
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+          <div className="flex items-center justify-center py-24 text-sm text-gray-400">
+            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+            Cargando base de datos…
+          </div>
+        );
     }
 
     return(
 
-        <div>
+        <div className="space-y-6">
             <button
                 onClick={() => navigate(-1)}
-                className="flex items-center gap-2 text-sm hover:underline"
+                className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 border border-gray-200 rounded-lg px-3 py-1.5 hover:bg-gray-50 transition-colors"
             >
-                <ArrowLeft size={18} />
+                <ArrowLeft className="w-4 h-4" />
                 Aurora RDS
             </button>
 
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-900 font-mono">
             {DBinstanceById?.id} 
         </h1>
 

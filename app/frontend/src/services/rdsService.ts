@@ -1,4 +1,6 @@
 import type { AwsFilters } from "@/contexts/FilterContext";
+const API_URL = import.meta.env.VITE_BACKEND_API;
+
 
 export  const getRdsDatabases = async(
     filters: AwsFilters
@@ -14,7 +16,7 @@ export  const getRdsDatabases = async(
 
     });
   const response = await fetch(
-    `http://localhost:3000/api/rds?${params.toString()}`
+    `${API_URL}/rds?${params.toString()}`
   );
 
   if (!response.ok) {
@@ -39,7 +41,7 @@ export const getRdsDatabasesById = async(
 
     });
   const response = await fetch(
-    `http://localhost:3000/api/rds/${id}?${params.toString()}`
+    `${API_URL}/rds/${id}?${params.toString()}`
   );
 
   if (!response.ok) {

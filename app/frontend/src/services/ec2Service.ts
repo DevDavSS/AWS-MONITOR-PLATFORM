@@ -1,5 +1,7 @@
 import type {AwsFilters}  from "@/contexts/FilterContext";
 
+const API_URL = import.meta.env.VITE_BACKEND_API;
+
 export const getEc2Instances = async (
     filters: AwsFilters
 ) => {
@@ -13,7 +15,7 @@ export const getEc2Instances = async (
 
     });
     const response = await fetch(
-        `http://localhost:3000/api/ec2?${params.toString()}`
+        `${API_URL}/ec2?${params.toString()}`
     );
     if (!response.ok) {
       throw new Error(
@@ -37,7 +39,7 @@ export const getEc2InstanceById = async (
 
     });
   const response = await fetch(
-    `http://localhost:3000/api/ec2/${id}?${params.toString()}`
+    `${API_URL}/ec2/${id}?${params.toString()}`
   );
 
   return response.json();

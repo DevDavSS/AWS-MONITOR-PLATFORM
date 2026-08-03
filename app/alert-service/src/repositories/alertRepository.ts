@@ -14,13 +14,16 @@ export const getAlerts = async (
         values.push(filters.service);
         conditions.push(`service = $${values.length}`);
     }
-
+   
     if (filters.organizationId !== undefined) {
         values.push(filters.organizationId);
         conditions.push(`organization_id = $${values.length}`);
     }
 
-    if (filters.accountId !== undefined) {
+    if (
+        filters.accountId !== undefined &&
+        filters.accountId !== "all"
+    ) {
         values.push(filters.accountId);
         conditions.push(`account_id = $${values.length}`);
     }

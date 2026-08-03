@@ -1,5 +1,7 @@
 import type { AwsFilters } from "@/contexts/FilterContext";
 
+const API_URL = import.meta.env.VITE_BACKEND_API;
+
 export const getEksClusters = async(
   filters: AwsFilters
 ) => {
@@ -13,7 +15,7 @@ export const getEksClusters = async(
 
     });
   const response = await fetch(
-    `http://localhost:3000/api/eks?${params.toString()}`
+    `${API_URL}/eks?${params.toString()}`
   );
   if (!response.ok) {
     throw new Error(
@@ -37,7 +39,7 @@ export const getEksClustersById = async(
 
     });
   const response = await fetch(
-    `http://localhost:3000/api/eks/${id}?${params.toString()}`
+    `${API_URL}/eks/${id}?${params.toString()}`
   );
   if (!response.ok) {
     throw new Error(
@@ -62,7 +64,7 @@ export const getEksNodeGroupById= async(
 
     });
   const response = await fetch(
-    `http://localhost:3000/api/eks/${clusterId}/nodegroups/${nodeGroupId}?${params.toString()}`
+    `${API_URL}/eks/${clusterId}/nodegroups/${nodeGroupId}?${params.toString()}`
   );
 
   if (!response.ok) {
@@ -91,7 +93,7 @@ export const getEksNodeById = async(
 
     });
   const response = await fetch(
-    `http://localhost:3000/api/eks/${clusterId}/nodegroups/${nodeGroupId}/node/${nodeId}?${params.toString()}`
+    `${API_URL}}/eks/${clusterId}/nodegroups/${nodeGroupId}/node/${nodeId}?${params.toString()}`
   );
 
   if (!response.ok) {

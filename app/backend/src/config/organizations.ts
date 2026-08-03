@@ -1,17 +1,14 @@
-import dotenv from "dotenv";
-dotenv.config({});
-
 
 export const organizationsNoArn = [
 
     {
-        id: "sofom",
-        name:"Sofom"
+        id:process.env.ORG_ID_1,
+        name:process.env.ORG_NAME_1,
     },
 
     {
-        id: "ION-Banco",
-        name: "ION-Banco"
+        id: process.env.ORG_ID_2,
+        name: process.env.ORG_NAME_2
     }
 
 ];
@@ -20,15 +17,15 @@ export const organizationsNoArn = [
 export const organizations = [
 
     {
-        id: "sofom",
+        id: process.env.ORG_ID_1,
 
-        managementRoleArn:"arn:aws:iam::822146368044:role/MonitoringManagementRole"
+        managementRoleArn:process.env.ORG_1_MANAGEMENT_ROLE_ARN
     },
 
     {
-        id: "ION-Banco",
+        id: process.env.ORG_ID_2,
 
-        managementRoleArn:"arn:aws:iam::715841324715:role/MonitoringManagementRole"
+        managementRoleArn:process.env.ORG_2_MANAGEMENT_ROLE_ARN
     }
 
 ];

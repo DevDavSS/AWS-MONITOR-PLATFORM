@@ -1,3 +1,4 @@
+
 export interface CacheStatus {
 
     lastUpdated: number | null;
@@ -5,12 +6,12 @@ export interface CacheStatus {
     nextUpdate: number | null;
 
 }
-
+const API_URL = import.meta.env.VITE_BACKEND_API;
 
 export const getCacheStatus = async(): Promise<CacheStatus> => {
 
     const response = await fetch(
-        "http://localhost:3000/api/cache/status"
+        `${API_URL}/cache/status`
     );
 
     if(!response.ok){

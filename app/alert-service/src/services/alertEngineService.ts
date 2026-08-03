@@ -45,7 +45,7 @@ export const runAlertEngine = async () => {
     console.log(
         `[${new Date().toISOString()}] Runtime Rules Generated: ${runtimeRules.length}`
     );
-
+    
     // Evaluate alert conditions
     console.log(`[${new Date().toISOString()}] Evaluating Alerts...`);
     const alerts =

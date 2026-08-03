@@ -30,6 +30,8 @@ export interface Alert {
 
     createdAt: Date;
 
+    resolvedAt?: Date;
+
 }
 
 export type AlertService =

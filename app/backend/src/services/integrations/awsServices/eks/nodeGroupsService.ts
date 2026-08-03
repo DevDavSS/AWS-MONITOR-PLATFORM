@@ -50,6 +50,10 @@ export const getNodeGroups = async (
                 name:
                     ng.nodegroupName ?? "",
 
+                accountId: eksContext.accountId,
+
+                accountName: eksContext.accountName,
+
                 status:
                     ng.status ?? "",
 

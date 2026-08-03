@@ -15,22 +15,20 @@ export default function Tabs({
   onTabChange,
 }: TabsProps) {
   return (
-  <div className="border-b">
-    <nav className="flex gap-2">
+    <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5">
       {tabs.map((tab) => (
         <button
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
-          className={`px-6 py-3 text-base font-medium rounded-t-lg border-b-2 transition-all ${
+          className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
             activeTab === tab.id
-              ? "border-blue-600 text-blue-600"
-              : "border-transparent text-muted-foreground hover:text-foreground"
+              ? "bg-white text-gray-900 shadow-sm"
+              : "text-gray-500 hover:text-gray-700"
           }`}
         >
           {tab.label}
         </button>
       ))}
-    </nav>
-  </div>
+    </div>
   );
 }

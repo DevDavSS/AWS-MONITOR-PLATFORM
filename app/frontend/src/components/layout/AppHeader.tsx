@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useHeader } from "./HeaderContext";
 import { useFilters } from "@/contexts/FilterContext";
 import { CacheStatus } from "@/components/shared/CacheStatus";
@@ -86,121 +87,148 @@ export default function AppHeader() {
     ];
 
   return (
-    <header className="border-b px-6 py-4">
+  <header
+    className="
+        fixed
+        top-0
+        left-60
+        right-0
+        z-40
+        border-b
+        border-gray-100
+        bg-white
+        px-6
+        py-4
+    "
+>
     <div className="flex items-start justify-between gap-4">
 
-
-
         {/* Título + Filtros */}
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
 
-          <h1 className="text-2xl font-bold">
-            AWS PROD Monitoring Dashboard 
+          <h1 className="text-xl font-semibold tracking-tight text-gray-900">
+            AWS PROD Monitoring Dashboard
           </h1>
 
-          <div className="flex gap-4">
-            <Select
-            disabled={!filtersEnabled}
-            value={filters.organizationId}
-            onValueChange={(value) => {
-                if (value !== null) {
-                setOrganization(value);
-                }
-            }}
-            >
-              <SelectTrigger className="w-56">
-                  <SelectValue placeholder="Select Organization" />
+          <div className="flex items-end gap-3">
+            <FilterField label="Organización">
+              <Select
+              disabled={!filtersEnabled}
+              value={filters.organizationId}
+              onValueChange={(value) => {
+                  if (value !== null) {
+                  setOrganization(value);
+                  }
+              }}
+              >
+                <SelectTrigger className="w-56 h-10 rounded-lg border-gray-300 text-sm">
+                    <SelectValue placeholder="Seleccionar organización" />
+                </SelectTrigger>
+
+                <SelectContent>
+
+                    {organizations.map(org => (
+
+                        <SelectItem
+                            key={org.id}
+                            value={org.id}
+                        >
+                            {org.name}
+                        </SelectItem>
+
+                    ))}
+
+                </SelectContent>
+
+            </Select>
+            </FilterField>
+
+            <FilterField label="Cuenta AWS">
+              <Select
+              disabled={!filtersEnabled}
+              value={filters.accountId ?? "all"}
+              onValueChange={(value) => {
+                  setAccount(value || "all");
+              }}
+              >
+              <SelectTrigger className="w-56 h-10 rounded-lg border-gray-300 text-sm">
+                  <SelectValue>
+                  {selectedAccountName}
+                  </SelectValue>
               </SelectTrigger>
 
               <SelectContent>
 
-                  {organizations.map(org => (
+                  <SelectItem value="all">
+                  Todas las cuentas
+                  </SelectItem>
 
-                      <SelectItem
-                          key={org.id}
-                          value={org.id}
-                      >
-                          {org.name}
-                      </SelectItem>
-
+                  {accounts.map((account) => (
+                  <SelectItem
+                      key={account.id}
+                      value={account.id}
+                  >
+                      {account.name}
+                  </SelectItem>
                   ))}
 
               </SelectContent>
 
           </Select>
-          
-            <Select
-            disabled={!filtersEnabled}
-            value={filters.accountId ?? "all"}
-            onValueChange={(value) => {
-                setAccount(value || "all");
-            }}
-            >
-            <SelectTrigger className="w-56">
-                <SelectValue>
-                {selectedAccountName}
-                </SelectValue>
-            </SelectTrigger>
+            </FilterField>
 
-            <SelectContent>
+            <FilterField label="Región">
+              <Select
+              disabled={!filtersEnabled}
+              value={filters.region}
+              onValueChange={(value) => {
+                  if (value) {
+                  setRegion(value);
+                  }
+              }}
+              >
+                <SelectTrigger className="w-44 h-10 rounded-lg border-gray-300 text-sm">
+                    <SelectValue placeholder="Seleccionar región" />
+                </SelectTrigger>
 
-                <SelectItem value="all">
-                Todas las cuentas
-                </SelectItem>
+                <SelectContent>
 
-                {accounts.map((account) => (
-                <SelectItem
-                    key={account.id}
-                    value={account.id}
-                >
-                    {account.name}
-                </SelectItem>
-                ))}
+                    {regions.map(region => (
 
-            </SelectContent>
+                        <SelectItem
+                            key={region}
+                            value={region}
+                        >
+                            {region}
+                        </SelectItem>
 
-        </Select>
+                    ))}
 
-            <Select
-            disabled={!filtersEnabled}
-            value={filters.region}
-            onValueChange={(value) => {
-                if (value) {
-                setRegion(value);
-                }
-            }}
-            >
-              <SelectTrigger className="w-48">
-                  <SelectValue placeholder="Select Region" />
-              </SelectTrigger>
+                </SelectContent>
 
-              <SelectContent>
+            </Select>
+            </FilterField>
 
-                  {regions.map(region => (
-
-                      <SelectItem
-                          key={region}
-                          value={region}
-                      >
-                          {region}
-                      </SelectItem>
-
-                  ))}
-
-              </SelectContent>
-
-          </Select>
             {extraFilters}
           </div>
 
         </div>
 
         {/* Estado del cache */}
-        <div className="pt-2 flex justify-end">
+        <div className="pt-1 flex justify-end shrink-0">
             <CacheStatus />
         </div>
 
       </div>
     </header>
+  );
+}
+
+function FilterField({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-xs text-gray-400">{label}</span>
+      {children}
+    </div>
   );
 }

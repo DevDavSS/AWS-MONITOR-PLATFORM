@@ -1,6 +1,5 @@
 import ResourceCard from "@/components/dashboard/ResourceCard";
 {/*import { useHeader } from "@/components/layout/HeaderContext"; */}
-import RdsTable from "@/components/rds/RdsTable";
 import { Input } from "@/components/ui/input";
 import type { RdsDatabase } from "@/types/rds";
 import { getRdsDatabases } from "@/services/rdsService";
@@ -10,6 +9,10 @@ import Tabs from "@/components/shared/Tabs";
 import AlertPanel from "@/components/alerts/AlertPanel";
 import RulePanel from "@/components/rules/rulesPanel";
 import type { RuleSelectableResource } from "@/types/RuleSelectableResource";
+import { Search, RefreshCw } from "lucide-react";
+import DataTable from "@/components/shared/DataTable";
+import { useNavigate } from "react-router-dom";
+import { StatusBadge } from "@/components/shared/StatusBadge";
 
 
 export default function RDS(){
@@ -18,6 +21,7 @@ export default function RDS(){
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const {filters} = useFilters();
+    const navigate = useNavigate();
 
     const tabs = [
     { id: "databases", label: "Databases" },
@@ -42,7 +46,67 @@ export default function RDS(){
     loadInstances();
     }, [filters]);
 
+    const databaseColumns = [
+        {
+            key: "dbIdentifier",
+            header: "Identifier",
+            render: (database: RdsDatabase) => (
+                <span className="font-medium text-gray-900">{database.dbIdentifier ?? "-"}</span>
+            ),
+        },
+        {
+            key: "cluster",
+            header: "Cluster",
+            render: (database: RdsDatabase) => (
+                <span className="font-mono text-xs text-gray-500">{database.clusterIdentifier ?? "-"}</span>
+            ),
+        },
+        {
+            key: "engine",
+            header: "Engine",
+            render: (database: RdsDatabase) => database.engine ?? "-",
+        },
+        {
+            key: "size",
+            header: "Size",
+            render: (database: RdsDatabase) => (
+                <span className="font-mono text-xs">{database.size ?? "-"}</span>
+            ),
+        },
+        {
+            key: "status",
+            header: "Status",
+            render: (database: RdsDatabase) =>
+                database.status ? <StatusBadge status={database.status} /> : "-",
+        },
+        {
+            key: "role",
+            header: "Role",
+              render: (database: RdsDatabase) => (
+                <span className="font-mono text-xs">{database.role ?? "-"}</span>
+            ),
 
+        },
+        {
+            key: "account",
+            header: "Account",
+            render: (database: RdsDatabase) => database.account ?? "-",
+        },
+        {
+            key: "cpu",
+            header: "CPU",
+            render: (database: RdsDatabase) =>
+                database.currentMetrics.cpu != null ? `${database.currentMetrics.cpu}%` : "-",
+
+        },
+        {
+            key: "memory",
+            header: "Memory",
+            render: (database: RdsDatabase) =>
+                database.currentMetrics.memory != null ? `${database.currentMetrics.memory}%` : "-",
+
+        },
+      ]
     // Atributos  a  mostrar en tabal de oonstancias para el creador de reglas
     const selectableResources: RuleSelectableResource[] =
 
@@ -68,9 +132,7 @@ export default function RDS(){
       database.clusterIdentifier,
       database.engine,
       database.size,
-      database.status,
-      database.organization,
-      database.account
+   
     ]
       .join(" ")
       .toLowerCase()
@@ -87,16 +149,26 @@ export default function RDS(){
     const total = databases.length;
 
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+          <div className="flex items-center justify-center py-24 text-sm text-gray-400">
+            <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+            Cargando bases de datos…
+          </div>
+        );
     }
 
     return(
         <div className="space-y-6">
-            <h1 className="text-3xl font-bold">
-            Aurora RDS Databases
-            </h1>
+            <div>
+                <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+                    Aurora RDS Databases
+                </h1>
+                <p className="text-sm text-gray-400 mt-1">
+                    Bases de datos RDS de la organización y cuentas seleccionadas
+                </p>
+            </div>
 
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-3 gap-4">
             <ResourceCard title="Running" value={running} />
             <ResourceCard title="Stopped" value={stopped} />
             <ResourceCard title="Total" value={total} />
@@ -110,15 +182,26 @@ export default function RDS(){
             />
 
             {activeTab === "databases" &&(
-                <>
-                <Input
-                placeholder="Search instance..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="max-w-md"
-                />
-                <RdsTable DBIdentifiers={filteredDatabases}/>
-                </>
+                <div className="space-y-4">
+                <div className="relative max-w-md">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input
+                        placeholder="Buscar base de datos..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        className="pl-9 rounded-lg border-gray-300"
+                    />
+                </div>
+            <DataTable
+                data={filteredDatabases}
+                columns={databaseColumns}
+                getRowKey={(database) => database.id}
+                onRowClick={(database) =>
+                    navigate(`/rds/${database.id}`)
+                }
+                emptyMessage="No se encontraron instancias con esos filtros"
+            />
+                </div>
             )}
             {activeTab ===  "alerts" &&(
                 <>
