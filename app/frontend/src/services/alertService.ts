@@ -1,7 +1,7 @@
 import type { AlertFilters } from "@/types/AlertFilters";
 
 
-const ALERT_API_URL = import.meta.env.VITE_ALERT_SERVICE_API;
+const VITE_ALERT_SERVICE_API = import.meta.env.VITE_ALERT_SERVICE_API;
 
 export const getAlerts = async (
 
@@ -31,7 +31,7 @@ export const getAlerts = async (
 
     const response = await fetch(
 
-        `${ALERT_API_URL}/alerts?${params}`
+        `${VITE_ALERT_SERVICE_API}?${params}`
 
     );
 

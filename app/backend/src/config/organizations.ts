@@ -1,4 +1,8 @@
-
+console.log({
+  ORG_ID_1: process.env.ORG_ID_1,
+  ORG_NAME_1: process.env.ORG_NAME_1,
+  ORG_1_MANAGEMENT_ROLE_ARN: process.env.ORG_1_MANAGEMENT_ROLE_ARN,
+});
 export const organizationsNoArn = [
 
     {

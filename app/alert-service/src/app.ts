@@ -6,6 +6,15 @@ import cors from "cors"
 
 const app = express();
 
+/* SERVICE HEALTHCHECK */
+app.get("/api/alerts/health", (_, res) => {
+    res.status(200).json({
+        status: "UP"
+    });
+});
+
+
+
 // Middleware
 app.use(cors());
 
@@ -20,7 +29,7 @@ app.use(
 
 // GET/POST/PATCH rules
 app.use(
-    "/api/rules",
+    "/api/alerts/rules",
     rulesRoutes
 );
 

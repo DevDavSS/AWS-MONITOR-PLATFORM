@@ -14,6 +14,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+/* SERVICE HEALTHCHECK */
+app.get("/api/health", (_, res) => {
+    res.status(200).json({
+        status: "UP"
+    });
+});
+
+
+
 /* Rutas para EC2 */
 app.use("/api/ec2", ec2Routes);
 

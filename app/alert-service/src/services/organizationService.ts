@@ -3,13 +3,12 @@ export interface OrganizationAccount {
     name: string;
 }
 
-
 export const getOrganizationAccounts = async (
     organizationId: string
 ): Promise<OrganizationAccount[]> => {
 
     const response = await fetch(
-        `http://localhost:3000/api/organizations/${organizationId}/accounts`
+        `${process.env.SNAPSHOT_API_URL}/api/organizations/${organizationId}/accounts`
     );
 
     if (!response.ok) {
